@@ -8,7 +8,7 @@
 
 > 卡面是真实组件在浏览器里独立渲染的（同一份 client.js），外壳为示意。
 
-**许可证 MIT · 插件 0.3.0 · 适配 DSH 0.2.x 桌面版 · Windows / macOS / Linux 的 Web GUI 均可**
+**许可证 MIT · 插件 0.4.0 · 适配 DSH 0.2.x 桌面版 · Windows / macOS / Linux 的 Web GUI 均可**
 
 ---
 
@@ -85,6 +85,8 @@ DSH 没有官方市场，市场索引就是一个普通 JSON，放在 GitHub 上
 
 3. 在列表里找到 **节气 · dsh-jieqi**，点安装
 
+安装完成后，`jieqi` skill 会随插件一起注册进会话技能目录，不需要再按方式三装一遍。
+
 注意：市场安装走 git 源，本机需要装有 git。没有 git 就用下面的手动方式。
 
 > 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
@@ -133,7 +135,9 @@ DSH 没有官方市场，市场索引就是一个普通 JSON，放在 GitHub 上
 
 > 桌面版的 profile 由 Electron 独占管理，命令行 dsh plugin --profile desktop 会被拒绝，只能按上面改文件。
 
-### 方式三：装成 skill（给模型用，不是卡片）
+### 方式三：只装 skill（给模型用，不是卡片）
+
+如果已经用方式一装了插件，这一步可以跳过——skill 已经在插件里。
 
 把 **skill/jieqi** 整个目录复制到：
 
@@ -219,6 +223,7 @@ dsh-jieqi/
 │  ├─ lib/astro.mjs        节气、干支、消息卦、三伏、数九的唯一实现
 │  ├─ lib/index.js         宿主：两个只读 JSON 路由
 │  ├─ lib/client.js        浏览器：一颗圆点与四张卡面
+│  ├─ assets/jieqi/        内置 skill（SKILL.md + scripts + references）
 │  ├─ cordis.patch.yml     挂载声明
 │  └─ package.json
 ├─ skill/jieqi/            同名 skill：命令行 + SKILL.md + 养生速查

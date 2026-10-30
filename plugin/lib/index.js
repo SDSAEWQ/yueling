@@ -9,10 +9,59 @@
  * No state, no writes: the routes only answer what day it is.
  */
 
+import { readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { solarTerm, yearView, dayKey } from './astro.mjs'
 
 export const name = 'dsh-jieqi'
-export const inject = ['webServer']
+export const inject = ['webServer', 'skills']
+
+const SKILL_DIR = fileURLToPath(new URL('../assets/jieqi/', import.meta.url))
+const SKILL_FILE = new URL('../assets/jieqi/SKILL.md', import.meta.url)
+const SKILL_SCRIPT = join(SKILL_DIR, 'scripts', 'jieqi.mjs')
+const SKILL_DESCRIPTION = '二十四节气与干支历速查，按天文黄经精确计算（不凭记忆）。当用户提到节气、今天什么节气、现在是什么节气、某个节气名（立春/霜降/冬至等）、距下一个节气还有几天、交节时刻、节气月建、流年干支、节气养生时使用。触发词：节气、二十四节气、今天什么节气、交节、月建、流年干支、霜降、立冬、冬至、春分。'
+
+/** Skill candidate advertised by the bundled provider. */
+export const jieqiSkill = {
+  name: 'jieqi',
+  description: SKILL_DESCRIPTION,
+  invocation: { modelInvocable: true, userInvocable: true },
+  provider: 'jieqi',
+  source: 'dsh-jieqi',
+  resourceBase: { kind: 'directory', path: SKILL_DIR },
+  rank: 600,
+  locator: SKILL_FILE,
+}
+
+function stripFrontmatter(text) {
+  if (!text.startsWith('---\n')) return text
+  const end = text.indexOf('\n---\n', 4)
+  return end === -1 ? text : text.slice(end + 5).replace(/^\n+/, '')
+}
+
+function renderBody(raw) {
+  return stripFrontmatter(raw)
+    .replaceAll('node scripts/jieqi.mjs', 'node "' + SKILL_SCRIPT + '"')
+    .replace('在 skill 目录下运行（Windows 上 node 在 PATH 里）：', '脚本随插件安装，已写成绝对路径（Windows 上 node 在 PATH 里）：')
+}
+
+/** Immutable skill provider: one bundled skill, body read on demand. */
+export const jieqiSkillProvider = {
+  name: 'jieqi',
+  list: () => Promise.resolve([jieqiSkill]),
+  async get() {
+    return {
+      name: jieqiSkill.name,
+      description: jieqiSkill.description,
+      invocation: jieqiSkill.invocation,
+      provider: jieqiSkill.provider,
+      source: jieqiSkill.source,
+      resourceBase: jieqiSkill.resourceBase,
+      content: renderBody(await readFile(SKILL_FILE, 'utf8')),
+    }
+  },
+}
 
 const ROUTE = '/plugins/dsh-jieqi/api'
 
@@ -71,4 +120,6 @@ export function apply(ctx) {
       }
     },
   }), 'dsh-jieqi: year route')
+
+  ctx.effect(() => ctx.skills.registerProvider(() => jieqiSkillProvider), 'dsh-jieqi: jieqi skill provider')
 }

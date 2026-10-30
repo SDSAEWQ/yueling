@@ -1,5 +1,11 @@
 # dsh-jieqi 变更记录
 
+## 0.4.0 — 2026-10-30
+
+- 插件内置 `jieqi` skill（`assets/jieqi/`），宿主通过 `ctx.skills.registerProvider` 注册；安装插件即同时得到卡片与 skill，不需要再手动拷贝到 `~/.agents/skills`。
+- skill 正文中的脚本路径在加载时替换为安装目录的绝对路径，模型可直接运行。
+- 独立 `skill/jieqi/` 继续保留，供只想装 skill 的人使用。
+
 ## 0.3.0 — 2026-10-30
 
 - 算法收敛为单一核心 `lib/astro.mjs`：24 节气、十二消息卦、三伏、数九、干支历都在这里；`jieqi` skill 携带同一份文件。

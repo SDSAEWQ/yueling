@@ -6,6 +6,14 @@ A quiet solar-term dot docked under the conversation header of the DeepSeek
 Harness Web GUI. Hover it and a small card unfolds: the term, which 候 of it
 we are in, the day count, and how far the next term is.
 
+## Bundled skill
+
+The package also ships the `jieqi` skill in `assets/jieqi/` and registers it on
+the Host through `ctx.skills`. Installing the plugin therefore adds both the
+card and the skill; the skill body is served with the installed script path
+already resolved, so the model can run it directly. A standalone copy still
+lives in `skill/jieqi/` at the repository root.
+
 ## What it is
 
 - `lib/astro.mjs` — the one implementation of the solar-term maths: the Sun's
