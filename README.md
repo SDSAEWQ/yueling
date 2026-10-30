@@ -1,1 +1,251 @@
-# dsh-jieqi
+# dsh-jieqi · 二十四节气，落在输入框上方
+
+一颗安静的小圆点，停在 DeepSeek Harness 对话区标题栏的下沿。鼠标移上去，它就展开成今天的节气卡：干支年、月建、第几天、交节时刻、当前候、距下一个节气，还有月建对应的消息卦。
+
+不联网，不调用模型，不占一个侧栏位置。所有节气由太阳视黄经在本地算出来。
+
+![dsh-jieqi cover](docs/cover.png)
+
+> 卡面是真实组件在浏览器里独立渲染的（同一份 client.js），外壳为示意。
+
+**许可证 MIT · 插件 0.3.0 · 适配 DSH 0.2.x 桌面版 · Windows / macOS / Linux 的 Web GUI 均可**
+
+---
+
+## 四种卡面
+
+![四种卡面](docs/faces.png)
+
+| 卡面 | 内容 |
+| --- | --- |
+| 今天 | 干支年、月建、日期、节气、第 N 天、交节时刻、当前候、距下一节气、消息卦 |
+| 三候 | 把一个节气拆成三段，已过 / 当前倒计时 / 下一候的起始日 |
+| 年表 | 全年二十四次交节时刻，可逐年翻阅 1900–2100 |
+| 消息卦 | 月建对应的十二消息卦：卦象、卦序、卦辞、一句白话、象曰 |
+
+---
+
+## 能做什么
+
+### 一、看今天
+
+- 干支年（立春换年）、月建（十二节换月，立春起寅）、公历日期
+- 节气名、交节时刻、进入该节气的第几天
+- 当前处于哪一候（七十二候），点开看三候的完整分段
+- 距下一个节气还有几天，底部一条细进度条
+- 月建对应的消息卦，十二道爻线（阳一画、阴两画，上爻在上）
+
+### 二、节气当天会主动出现
+
+- 交节前 **1 小时**自动展开卡片，顶部一条品牌色细条
+- 交节时刻发一条**系统通知**（首次点击圆点时才请求通知权限，不在页面加载时打扰）
+- 通知每个节气只发一次；页面开着过夜，也会在交节时提醒
+- 交节日圆点会变大一点，并有一次很轻的涟漪
+
+### 三、怎么放、怎么收
+
+- 圆点默认吸附在对话区标题栏下沿，可左右拖动；靠近标题栏时停在栏上，拖到下面就是自由位置
+- 拖到窗口左右边缘会收成一条**半隐藏的窄标签**，悬停向内展开（靠近底部时向上展开）
+- 双击圆点、或右键圆点，回到标题栏中间
+- 点击圆点（或聚焦后按 Enter / 空格）把卡片**钉住**，移开鼠标也不收
+- 按 **Alt+J** 随时开合，不抢输入焦点
+- 点 × 只是今天不再自动展开，圆点还在，随时能再打开
+- 卡片位置、钉住状态、当前页、配色都会记住
+
+### 四、年表、三伏与数九
+
+- 日历图标打开全年 3×8 节气表，点任一节气看精确交节时刻
+- 页脚给出当年的立春、入九第一天、三伏区间
+- 三伏或数九正在进行时，倒计时行会先显示它：初伏 6 天 · 距大暑 3 天、一九 4 天 · 距小寒 11 天
+- 初伏 = 夏至后第三个庚日，末伏 = 立秋后第一个庚日；数九从冬至起 81 天
+
+### 五、细节
+
+- 跨日自动换日：本地午夜、页面重新可见、窗口重新获得焦点时都会重新取数，开一夜的窗口第二天就是新的一天
+- 窄窗（< 480px）自动收成单行：节气 · 第 N 天 · 关闭
+- 八种配色：跟随节气（春绿、秋赭金、冬蓝灰）、品牌色，以及竹青、松绿、绛紫、秋香、赭石、靛青
+- 点击卡片复制一行摘要；「问一问」把一句现成的问题放进输入框（放不进去就复制到剪贴板）
+- 断网或宿主接口不可用时，客户端有本地兜底，卡片照常显示
+- 宿主接口挂掉、通知被拒、localStorage 满，都静默降级，不弹错误
+
+---
+
+## 安装
+
+### 方式一：插件市场索引（推荐）
+
+DSH 没有官方市场，市场索引就是一个普通 JSON，放在 GitHub 上即可。
+
+1. 打开 **插件** 页 → **实验性插件** → 右上角 **更多** → 勾选 **启用「自定义插件市场」**
+2. 切到 **发现** → **添加索引**，填入：
+
+   ~~~text
+   https://raw.githubusercontent.com/SDSAEWQ/dsh-jieqi/main/market/index.json
+   ~~~
+
+3. 在列表里找到 **节气 · dsh-jieqi**，点安装
+
+注意：市场安装走 git 源，本机需要装有 git。没有 git 就用下面的手动方式。
+
+> 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
+
+### 方式二：手动安装（不需要 git）
+
+1. 下载本仓库（Code → Download ZIP），把 **plugin** 目录整个复制到：
+
+   ~~~text
+   %USERPROFILE%\.dsh\plugins\dsh-jieqi
+   ~~~
+
+2. 编辑 **%USERPROFILE%\.dsh\profiles\desktop\package.json**，在 dependencies 里加一行，在 dsh.profile.bundles 末尾加一项：
+
+   ~~~json
+   {
+     "dependencies": {
+       "dsh-jieqi": "link:C:/Users/<你的用户名>/.dsh/plugins/dsh-jieqi"
+     },
+     "dsh": {
+       "profile": {
+         "bundles": [
+           "@deepseek-ai/dsh-base",
+           "dsh-jieqi"
+         ]
+       }
+     }
+   }
+   ~~~
+
+3. 在 **%USERPROFILE%\.dsh\profiles\desktop\cordis.patch.yml** 末尾追加：
+
+   ~~~yaml
+   - insert:
+       - id: jieqi
+         name: dsh-jieqi
+   ~~~
+
+4. 建一个目录联接（node_modules 里要能找到这个包）：
+
+   ~~~powershell
+   New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-jieqi" -Target "$env:USERPROFILE\.dsh\plugins\dsh-jieqi"
+   ~~~
+
+5. 完全退出 DSH 再打开。宿主半边会随应用启动，页面按 **Ctrl+R** 刷新即可看到圆点。
+
+> 桌面版的 profile 由 Electron 独占管理，命令行 dsh plugin --profile desktop 会被拒绝，只能按上面改文件。
+
+### 方式三：装成 skill（给模型用，不是卡片）
+
+把 **skill/jieqi** 整个目录复制到：
+
+~~~text
+%USERPROFILE%\.agents\skills\jieqi
+~~~
+
+新开一个会话，输入 **/jieqi**，或直接问「今天什么节气」「距立冬还有几天」「现在什么月建」，模型会调用随带的脚本按黄经计算，而不是凭记忆。
+
+skill 也可以直接在终端用：
+
+~~~text
+node scripts/jieqi.mjs                # 今天
+node scripts/jieqi.mjs 2026-12-22     # 指定日期
+node scripts/jieqi.mjs --json         # 机器可读
+node scripts/jieqi.mjs --year         # 附当年 24 节气全表
+~~~
+
+---
+
+## 交互速查
+
+| 操作 | 效果 |
+| --- | --- |
+| 鼠标移到圆点 | 展开卡片，移开自动收起 |
+| 点击圆点 / Enter / Space | 钉住卡片 |
+| Alt+J | 开合卡片（全局，不抢焦点） |
+| 拖动圆点 | 吸附标题栏、自由位置、拖到边缘收成窄标签 |
+| 双击 / 右键圆点 | 回到标题栏中间 |
+| 点 × | 今天收起（圆点保留） |
+| 点「二候 · …」 | 三候页 |
+| 点日历图标 | 年表页，‹ › 换年 |
+| 点消息卦 | 卦页 |
+| 点配色圆点 | 八种配色 |
+| 点卡片空白 | 复制一行摘要 |
+| Esc / ‹ | 返回上一页 |
+
+---
+
+## 宿主接口
+
+插件宿主半边只做两件事：把算法包成 HTTP，交给已经装好的 Web 服务。
+
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| GET | /plugins/dsh-jieqi/api/today?date=YYYY-MM-DD | 指定日期的节气、干支、候、消息卦；省略 date 为今天 |
+| GET | /plugins/dsh-jieqi/api/year?year=YYYY | 全年二十四节气与交节时刻 |
+
+返回 JSON，形如：
+
+~~~json
+{
+  "ok": true,
+  "date": "2026-10-30",
+  "term": "霜降",
+  "termAt": "2026-10-23T17:39:00+08:00",
+  "isTermDay": false,
+  "dayInTerm": 8,
+  "next": { "name": "立冬", "at": "2026-11-07T17:49:00+08:00", "days": 8 },
+  "ganzhi": { "year": "丙午", "monthBranch": "戌", "monthStart": "寒露" }
+}
+~~~
+
+客户端只请求这一个本地路由，不发任何外网请求。
+
+---
+
+## 精度与边界
+
+- 算法：Meeus《Astronomical Algorithms》太阳视黄经低精度公式 + Espenak–Meeus ΔT 修正 + 二分法求解
+- 与紫金山天文台公布的交节时刻相差约 **2–6 分钟**，日期可靠；追到秒级需要 VSOP87 或权威历表
+- 时区固定为北京时间（UTC+8，无夏令时）
+- 年表范围 1900–2100
+- 年干支严格按立春换年，月建按十二节换月——这是命理的算法，不是农历月
+
+---
+
+## 目录结构
+
+~~~text
+dsh-jieqi/
+├─ plugin/                 DSH 插件（宿主 + 浏览器 + 算法）
+│  ├─ lib/astro.mjs        节气、干支、消息卦、三伏、数九的唯一实现
+│  ├─ lib/index.js         宿主：两个只读 JSON 路由
+│  ├─ lib/client.js        浏览器：一颗圆点与四张卡面
+│  ├─ cordis.patch.yml     挂载声明
+│  └─ package.json
+├─ skill/jieqi/            同名 skill：命令行 + SKILL.md + 养生速查
+│  ├─ scripts/astro.mjs    与插件同一份算法
+│  ├─ scripts/jieqi.mjs    CLI
+│  └─ references/
+├─ market/index.json       可添加的插件市场索引（format 1）
+└─ docs/                   截图与图标
+~~~
+
+---
+
+## 卸载
+
+1. 从 **%USERPROFILE%\.dsh\profiles\desktop\package.json** 的 dependencies 与 dsh.profile.bundles 里删掉 dsh-jieqi
+2. 删掉 **cordis.patch.yml** 末尾的 jieqi 那段 insert
+3. 删掉 **node_modules\dsh-jieqi** 联接与 **%USERPROFILE%\.dsh\plugins\dsh-jieqi** 目录
+4. 重启 DSH
+
+localStorage 里的 dsh-jieqi.* 键可留可删，不影响其他功能。
+
+---
+
+## English
+
+A short English README lives in [README.en.md](README.en.md). The detailed behaviour reference is in [plugin/README.md](plugin/README.md).
+
+## License
+
+MIT © 2026 SDSAEWQ
