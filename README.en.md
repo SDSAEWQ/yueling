@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/icon.png" width="108" height="108" alt="dsh-jieqi" />
+<img src="docs/icon.png" width="108" height="108" alt="Yueling" />
 
-# Jieqi · dsh-jieqi
+# Yueling · 24 solar terms
 
 **The 24 solar terms, floating above your input box.**
 
@@ -13,8 +13,8 @@ Hover it and it blooms into today's card. The whole card is draggable, and one c
 
 [![npm](https://img.shields.io/npm/v/dshjieqi-card?style=flat-square&label=npm&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![downloads](https://img.shields.io/npm/dm/dshjieqi-card?style=flat-square&label=downloads&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
-[![stars](https://img.shields.io/github/stars/SDSAEWQ/dsh-jieqi?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/dsh-jieqi/stargazers)
-[![ci](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml)
+[![stars](https://img.shields.io/github/stars/SDSAEWQ/yueling?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/yueling/stargazers)
+[![ci](https://github.com/SDSAEWQ/yueling/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/yueling/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square&labelColor=15171f)](LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.19-3c873a?style=flat-square&labelColor=15171f)]()
 [![platform](https://img.shields.io/badge/platform-DeepSeek%20Harness-4d6bfe?style=flat-square&labelColor=15171f)]()
@@ -27,7 +27,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 </div>
 
-<img src="docs/cover.png" alt="dsh-jieqi cover" />
+<img src="docs/cover.png" alt="Yueling cover" />
 
 > The card faces are the real component rendered standalone in a browser (same client.js); the outer shell is illustrative.
 
@@ -153,7 +153,7 @@ dshjieqi-card
 **From GitHub** (when npm is unreachable, or you want the latest commit):
 
 ~~~text
-github:SDSAEWQ/dsh-jieqi
+github:SDSAEWQ/yueling
 ~~~
 
 No #path suffix needed — the repository root is the package. Restart DSH (or press Ctrl+R), and a dot appears above the input box 🫧
@@ -161,6 +161,8 @@ No #path suffix needed — the repository root is the package. Restart DSH (or p
 > **❓ Why is the npm name dshjieqi-card and not dshjieqi?** dsh-jieqi is already taken by a placeholder package (0.0.1, README only, no dsh manifest), and npm rejects new names that differ only in punctuation — dshjieqi was rejected as “too similar”. Same plugin, different name.
 >
 > ⚠️ Do not install dsh-jieqi: it is an empty shell and shows no card.
+
+> 🏷 **Renamed**: since Oct 2026 the repository is **Yueling** (`SDSAEWQ/yueling`); the old `SDSAEWQ/dsh-jieqi` URL redirects. The plugin id (dsh-jieqi), the npm name (dshjieqi-card) and existing installs are unchanged.
 
 ### Option 2 — Marketplace index (recommended)
 
@@ -170,9 +172,9 @@ DSH ships without a marketplace, but the Discover page accepts any index URL:
 2. **Discover** → **Add index** → paste:
 
    ~~~text
-   https://cdn.jsdelivr.net/gh/SDSAEWQ/dsh-jieqi@main/market/index.json
+   https://cdn.jsdelivr.net/gh/SDSAEWQ/yueling@main/market/index.json
    ~~~
-3. Search for dsh-jieqi and hit install
+3. Search for dsh-jieqi or yueling (listed as **Yueling**) and hit install
 
 The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 
@@ -182,7 +184,7 @@ The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 >
 > ~~~text
 > dsh plugin --profile web add dshjieqi-card
-> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi
+> dsh plugin --profile web add github:SDSAEWQ/yueling
 > ~~~
 
 ### Option 3 — Manual (no git)
@@ -301,13 +303,13 @@ On push, GitHub Actions (.github/workflows/ci.yml) runs the same set: node --che
 ## 🗂️ Layout
 
 ~~~text
-dsh-jieqi/                  ← repository root = the plugin package
+yueling/                    ← repository root = the plugin package
 ├─ package.json            dsh manifest, exports, npm metadata
 ├─ cordis.patch.yml        mount declaration
 ├─ lib/
 │  ├─ astro.mjs            the only implementation of the term maths
 │  ├─ index.js             host: two read-only JSON routes
-│  └─ client.js            browser: the dot, four faces, the hexagrams
+│  └─ client.js            browser: the dot, six faces, the hexagrams
 ├─ assets/jieqi/           bundled skill (SKILL.md + scripts + references)
 ├─ market/index.json       index you can add to the marketplace
 ├─ test/smoke.mjs          zero-dependency smoke test (npm test)

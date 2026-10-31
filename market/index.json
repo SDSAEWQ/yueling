@@ -1,12 +1,12 @@
 {
   "format": 1,
   "title": {
-    "en": "Jieqi · solar terms",
-    "zh": "节气 · dsh-jieqi"
+    "en": "Yueling · 24 solar terms",
+    "zh": "月令 · 二十四节气"
   },
   "description": {
-    "en": "A quiet dot under the conversation header that unfolds into the Chinese solar term, the day pillar and double-hour, its 候, a 养生 line, the year table and the 消息卦 of the month. Drag the card itself. The 卦 page can cast a hexagram with three coins.",
-    "zh": "对话区标题栏下沿的一颗小圆点，展开是今天的节气、日柱时辰、三候、一句养生、全年交节时刻与月建消息卦；整张卡片都能拖着走。 卦页还能铜钱摇一卦。"
+    "en": "A quiet dot under the conversation header that unfolds into the Chinese solar term, the day pillar and double-hour, its 候, a 养生 line, the year table and the 消息卦 of the month. Drag the card itself; tap the day pillar for a short reading; the 卦 page casts a hexagram with three coins and keeps the last seven days.",
+    "zh": "对话区标题栏下沿的一颗小圆点，展开是今天的节气、日柱时辰、三候、一句养生、全年交节时刻与月建消息卦；整张卡片都能拖着走，点日柱看今天适合做的事，卦页还能铜钱摇一卦并回看七天。"
   },
   "metadata": {
     "categories": {
@@ -37,19 +37,18 @@
     {
       "name": "dsh-jieqi",
       "title": {
-        "en": "Jieqi",
-        "zh": "节气"
+        "en": "Yueling",
+        "zh": "月令"
       },
       "description": {
-        "en": "Solar-term dot for the DeepSeek Harness Web GUI. Local astronomy: today's term, day pillar and double-hour, 72 pentads, the month's sovereign hexagram, a 养生 line, the year table, and a three-coin hexagram cast. No network, no sidebar slot. Install from the Plugins page: dshjieqi-card (npm) or github:SDSAEWQ/dsh-jieqi",
-        "zh": "二十四节气卡片：干支年、月建、日柱时辰、三候、消息卦、年表、养生一句与三伏数九，全部本地计算；卦页还能铜钱摇一卦。安装：插件页「添加插件」填 dshjieqi-card（npm）或 github:SDSAEWQ/dsh-jieqi"
+        "en": "Yueling (月令) — a solar-term dot for the DeepSeek Harness Web GUI. Local astronomy: today's term, day pillar and double-hour, 72 pentads, the month's sovereign hexagram, a 养生 line, the year table, a day reading page, and a three-coin hexagram cast with a seven-day log. No network, no sidebar slot. Install from the Plugins page: dshjieqi-card (npm) or github:SDSAEWQ/yueling",
+        "zh": "月令：二十四节气卡片。干支年、月建、日柱时辰、三候、消息卦、年表、养生一句与三伏数九，全部本地计算；点日柱看今天适合做的事，卦页还能铜钱摇一卦并回看七天。安装：插件页「添加插件」填 dshjieqi-card（npm）或 github:SDSAEWQ/yueling"
       },
-      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjUxMCIgaGVpZ2h0PSI1MTAiIHJ4PSIxMTYiIGZpbGw9IiMxYTFhMWUiLz4KICA8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iNTEwIiBoZWlnaHQ9IjUxMCIgcng9IjExNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmMTQiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxnIHN0cm9rZT0iIzZiNzA3OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgxNSAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSg0NSAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSg2MCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSg3NSAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgxMDUgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iODIiIHgyPSIyNTYiIHkyPSI5NCIgdHJhbnNmb3JtPSJyb3RhdGUoMTIwIDI1NiAyNTYpIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjgyIiB4Mj0iMjU2IiB5Mj0iOTQiIHRyYW5zZm9ybT0icm90YXRlKDEzNSAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgxNTAgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iODIiIHgyPSIyNTYiIHkyPSI5NCIgdHJhbnNmb3JtPSJyb3RhdGUoMTY1IDI1NiAyNTYpIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjgyIiB4Mj0iMjU2IiB5Mj0iOTQiIHRyYW5zZm9ybT0icm90YXRlKDE5NSAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgyMTAgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iODIiIHgyPSIyNTYiIHkyPSI5NCIgdHJhbnNmb3JtPSJyb3RhdGUoMjI1IDI1NiAyNTYpIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjgyIiB4Mj0iMjU2IiB5Mj0iOTQiIHRyYW5zZm9ybT0icm90YXRlKDI0MCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgyNTUgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iODIiIHgyPSIyNTYiIHkyPSI5NCIgdHJhbnNmb3JtPSJyb3RhdGUoMjg1IDI1NiAyNTYpIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjgyIiB4Mj0iMjU2IiB5Mj0iOTQiIHRyYW5zZm9ybT0icm90YXRlKDMwMCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI4MiIgeDI9IjI1NiIgeTI9Ijk0IiB0cmFuc2Zvcm09InJvdGF0ZSgzMTUgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iODIiIHgyPSIyNTYiIHkyPSI5NCIgdHJhbnNmb3JtPSJyb3RhdGUoMzMwIDI1NiAyNTYpIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjgyIiB4Mj0iMjU2IiB5Mj0iOTQiIHRyYW5zZm9ybT0icm90YXRlKDM0NSAyNTYgMjU2KSIvPjwvZz4KICA8ZyBzdHJva2U9IiNlMGE0NWEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48bGluZSB4MT0iMjU2IiB5MT0iNzQiIHgyPSIyNTYiIHkyPSI5OCIgdHJhbnNmb3JtPSJyb3RhdGUoMCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI3NCIgeDI9IjI1NiIgeTI9Ijk4IiB0cmFuc2Zvcm09InJvdGF0ZSg5MCAyNTYgMjU2KSIvPjxsaW5lIHgxPSIyNTYiIHkxPSI3NCIgeDI9IjI1NiIgeTI9Ijk4IiB0cmFuc2Zvcm09InJvdGF0ZSgxODAgMjU2IDI1NikiLz48bGluZSB4MT0iMjU2IiB5MT0iNzQiIHgyPSIyNTYiIHkyPSI5OCIgdHJhbnNmb3JtPSJyb3RhdGUoMjcwIDI1NiAyNTYpIi8+PC9nPgogIDx0ZXh0IHg9IjI1NiIgeT0iMjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZm9udC1mYW1pbHk9Ik1pY3Jvc29mdCBZYUhlaSwgUGluZ0ZhbmcgU0MsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTc2IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZjJmM2Y1Ij7oioI8L3RleHQ+Cjwvc3ZnPg==",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzFiMWQyNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEwMTExNiIvPjwvbGluZWFyR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJiIiBjeD0iMC41IiBjeT0iMC40NCIgcj0iMC41Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNjOGE4NmEiIHN0b3Atb3BhY2l0eT0iMC4wOSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M4YTg2YSIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMjQiIGhlaWdodD0iMTAyNCIgcng9IjIyOCIgZmlsbD0idXJsKCNhKSIvPjxyZWN0IHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHJ4PSIyMjgiIGZpbGw9InVybCgjYikiLz48cmVjdCB4PSIxLjUiIHk9IjEuNSIgd2lkdGg9IjEwMjEiIGhlaWdodD0iMTAyMSIgcng9IjIyNi41IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA3IiBzdHJva2Utd2lkdGg9IjMiLz48Y2lyY2xlIGN4PSI1MTIiIGN5PSI1MTIiIHI9IjQzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWFhMGFhIiBzdHJva2Utb3BhY2l0eT0iMC4xNiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48ZyBzdHJva2U9IiM5YWEwYWEiIHN0cm9rZS1vcGFjaXR5PSIwLjM4IiBzdHJva2Utd2lkdGg9IjIuNiI+PGxpbmUgeDE9IjYyMC43IiB5MT0iMTA2LjMiIHgyPSI2MjQuOCIgeTI9IjkwLjkiIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjcyMi4wIiB5MT0iMTQ4LjMiIHgyPSI3MzAuMCIgeTI9IjEzNC40IiBjbGFzcz0ieSIvPjxsaW5lIHgxPSI4MDkuMCIgeTE9IjIxNS4wIiB4Mj0iODIwLjMiIHkyPSIyMDMuNyIgY2xhc3M9InkiLz48bGluZSB4MT0iODc1LjciIHkxPSIzMDIuMCIgeDI9Ijg4OS42IiB5Mj0iMjk0LjAiIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjkxNy43IiB5MT0iNDAzLjMiIHgyPSI5MzMuMSIgeTI9IjM5OS4yIiBjbGFzcz0ieSIvPjxsaW5lIHgxPSI5MTcuNyIgeTE9IjYyMC43IiB4Mj0iOTMzLjEiIHkyPSI2MjQuOCIgY2xhc3M9InkiLz48bGluZSB4MT0iODc1LjciIHkxPSI3MjIuMCIgeDI9Ijg4OS42IiB5Mj0iNzMwLjAiIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjgwOS4wIiB5MT0iODA5LjAiIHgyPSI4MjAuMyIgeTI9IjgyMC4zIiBjbGFzcz0ieSIvPjxsaW5lIHgxPSI3MjIuMCIgeTE9Ijg3NS43IiB4Mj0iNzMwLjAiIHkyPSI4ODkuNiIgY2xhc3M9InkiLz48bGluZSB4MT0iNjIwLjciIHkxPSI5MTcuNyIgeDI9IjYyNC44IiB5Mj0iOTMzLjEiIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjQwMy4zIiB5MT0iOTE3LjciIHgyPSIzOTkuMiIgeTI9IjkzMy4xIiBjbGFzcz0ieSIvPjxsaW5lIHgxPSIzMDIuMCIgeTE9Ijg3NS43IiB4Mj0iMjk0LjAiIHkyPSI4ODkuNiIgY2xhc3M9InkiLz48bGluZSB4MT0iMjE1LjAiIHkxPSI4MDkuMCIgeDI9IjIwMy43IiB5Mj0iODIwLjMiIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjE0OC4zIiB5MT0iNzIyLjAiIHgyPSIxMzQuNCIgeTI9IjczMC4wIiBjbGFzcz0ieSIvPjxsaW5lIHgxPSIxMDYuMyIgeTE9IjYyMC43IiB4Mj0iOTAuOSIgeTI9IjYyNC44IiBjbGFzcz0ieSIvPjxsaW5lIHgxPSIxMDYuMyIgeTE9IjQwMy4zIiB4Mj0iOTAuOSIgeTI9IjM5OS4yIiBjbGFzcz0ieSIvPjxsaW5lIHgxPSIxNDguMyIgeTE9IjMwMi4wIiB4Mj0iMTM0LjQiIHkyPSIyOTQuMCIgY2xhc3M9InkiLz48bGluZSB4MT0iMjE1LjAiIHkxPSIyMTUuMCIgeDI9IjIwMy43IiB5Mj0iMjAzLjciIGNsYXNzPSJ5Ii8+PGxpbmUgeDE9IjMwMi4wIiB5MT0iMTQ4LjMiIHgyPSIyOTQuMCIgeTI9IjEzNC40IiBjbGFzcz0ieSIvPjxsaW5lIHgxPSI0MDMuMyIgeTE9IjEwNi4zIiB4Mj0iMzk5LjIiIHkyPSI5MC45IiBjbGFzcz0ieSIvPjwvZz48ZyBzdHJva2U9IiNjOWE4NmEiIHN0cm9rZS13aWR0aD0iMy40Ij48bGluZSB4MT0iNTEyLjAiIHkxPSIxMDguMCIgeDI9IjUxMi4wIiB5Mj0iNjguMCIgY2xhc3M9ImciLz48bGluZSB4MT0iOTE2LjAiIHkxPSI1MTIuMCIgeDI9Ijk1Ni4wIiB5Mj0iNTEyLjAiIGNsYXNzPSJnIi8+PGxpbmUgeDE9IjUxMi4wIiB5MT0iOTE2LjAiIHgyPSI1MTIuMCIgeTI9Ijk1Ni4wIiBjbGFzcz0iZyIvPjxsaW5lIHgxPSIxMDguMCIgeTE9IjUxMi4wIiB4Mj0iNjguMCIgeTI9IjUxMi4wIiBjbGFzcz0iZyIvPjwvZz48L2c+PGcgZmlsbD0iI2YzZjBlNyI+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzg2LjY0IDQzNi42MSkgc2NhbGUoMC4yOTYwIC0wLjI5NjApIiBkPSJNNzc5IDY4OCA3NDUgNjYxVi01N1E3NDUgLTkzIDczNC4wIC0xMDguNVE3MjMgLTEyNCA2OTUuNSAtMTM5LjVRNjY4IC0xNTUgNjYzLjAgLTE1NS4wUTY1OCAtMTU1IDY1NiAtMTQ2UTY1MCAtMTE0IDYyNy41IC05OC4wUTYwNSAtODIgNTMxIC02MUw1MzMgLTQ2UTYyMiAtNjEgNjQ4LjUgLTYxLjBRNjc1IC02MSA2ODYuNSAtNTUuNVE2OTggLTUwIDY5OCAtMjZWMjMzSDMxN1EzMDYgOTIgMjQ4LjUgNC4wUTE5MSAtODQgNjcgLTE2NEw1OSAtMTUxUTE1NyAtNjUgMjAxLjAgMy4wUTI0NSA3MSAyNjAuMCAxNjEuMFEyNzUgMjUxIDI3NSA0MjJWNjI0UTI3NSA3MDYgMjcyIDc1NUwzMzMgNzA0SDY3OEw3MTEgNzUxTDc3OCA3MDdRNzg4IDcwMSA3ODguMCA2OTguMFE3ODggNjk1IDc3OSA2ODhaTTY5OCA0NzdWNjgySDMyOUwzMjUgNDc3Wk02OTggMjU1VjQ1NUgzMjVMMzI0IDM5MlEzMjIgMjkxIDMxOSAyNTVaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzY0LjE1IDc2MS4xNCkgc2NhbGUoMC4yOTYwIC0wLjI5NjApIiBkPSJNOTcyIDM0M1E5NTcgMzQ1IDk0NCAzNDVRODkyIDM0NSA4NzIgMzE3UTg2OCAzMTIgODY0IDMxMlE4NTUgMzEyIDc2Ny41IDM3OC4wUTY4MCA0NDQgNjIwLjUgNTE4LjVRNTYxIDU5MyA1MTIgNzA2UTI2OCAzOTEgMzggMjQ5TDI3IDI2MVExNzQgMzczIDMwMC41IDUyMC41UTQyNyA2NjggNDc3IDc3N0w1NTkgNzQ0UTU2NiA3NDEgNTY2LjAgNzM2LjVRNTY2IDczMiA1NTYuMCA3MjguMFE1NDYgNzI0IDUyOCA3MTdRNjc3IDQzMyA5NzEgMzU0Wk00MjQgNTIwUTU0OSA0NTEgNTQ5IDM4OVE1NDkgMzcyIDUzNS41IDM1NC41UTUyMiAzMzcgNTExLjAgMzM3LjBRNTAwIDMzNyA0OTMuNSAzNDYuMFE0ODcgMzU1IDQ4NyAzNzFRNDg3IDQ1MSA0MTggNTA5Wk03NzEgMjMyUTc3NSAyMjcgNzc1LjAgMjIzLjBRNzc1IDIxOSA3NjQgMjE2UTcxNiAyMDIgNjgwIDE2MEw1MjkgLTE5UTU2OCAtNDYgNTg2LjAgLTY5LjVRNjA0IC05MyA2MDQuMCAtMTE2LjVRNjA0IC0xNDAgNTk1LjUgLTE1NC4wUTU4NyAtMTY4IDU3Ni41IC0xNjguMFE1NjYgLTE2OCA1NjAuNSAtMTYyLjVRNTU1IC0xNTcgNTQ2IC0xMzZRNTI5IC05NSA0NTEuNSAtMjUuNVEzNzQgNDQgMjc5IDg3TDI4NiAxMDBRNDA4IDYwIDUwOCAtNUw2NzEgMjM0TDI5MCAyMjNRMjQ1IDIyMSAyMjMgMjEyTDE5NSAyNDlRMjUxIDI0NSAyNjkgMjQ1TDY2NSAyNTZMNzEzIDI5OFoiLz48L2c+PC9zdmc+",
       "author": "SDSAEWQ",
-      "homepage": "https://github.com/SDSAEWQ/dsh-jieqi",
+      "homepage": "https://github.com/SDSAEWQ/yueling",
       "repository": {
-        "url": "https://github.com/SDSAEWQ/dsh-jieqi",
-        "directory": "plugin"
+        "url": "https://github.com/SDSAEWQ/yueling"
       },
       "metadata": {
         "category": "calendar",
@@ -58,7 +57,9 @@
           "solar term",
           "二十四节气",
           "干支",
-          "jieqi"
+          "jieqi",
+          "月令",
+          "yueling"
         ],
         "labels": [
           "chinese",
@@ -72,7 +73,7 @@
           "publishTimestamp": 1793433303,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "00bccc6b6ed066e39e6d5d90c38c9a76a17aa06e"
           }
         },
@@ -81,7 +82,7 @@
           "publishTimestamp": 1793432201,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "bd211a63bfc0f2a128b2da91365355a7146866dd"
           }
         },
@@ -90,7 +91,7 @@
           "publishTimestamp": 1793429988,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "1d493a7683d061766facc45914407a828bc45183"
           }
         },
@@ -99,7 +100,7 @@
           "publishTimestamp": 1793428223,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "bdbd1632d4f55e4f1f9aaa914bfed5c517d1c4fd",
             "path": "plugin"
           }
@@ -109,7 +110,7 @@
           "publishTimestamp": 1793412552,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "f89eed09178ab0ec1fe5b8999e0f9008a2195f90",
             "path": "plugin"
           }
@@ -119,7 +120,7 @@
           "publishTimestamp": 1793350742,
           "source": {
             "type": "git",
-            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "url": "https://github.com/SDSAEWQ/yueling",
             "commit": "f6b98de8cb035b34519f75a22a5fa643006595db",
             "path": "plugin"
           }

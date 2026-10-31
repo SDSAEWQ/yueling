@@ -44,11 +44,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SDSAEWQ/dsh-jieqi.git"
+    "url": "git+https://github.com/SDSAEWQ/yueling.git"
   },
-  "homepage": "https://github.com/SDSAEWQ/dsh-jieqi#readme",
+  "homepage": "https://github.com/SDSAEWQ/yueling#readme",
   "bugs": {
-    "url": "https://github.com/SDSAEWQ/dsh-jieqi/issues"
+    "url": "https://github.com/SDSAEWQ/yueling/issues"
   },
   "scripts": {
     "test": "node test/smoke.mjs"

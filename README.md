@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/icon.png" width="108" height="108" alt="dsh-jieqi" />
+<img src="docs/icon.png" width="108" height="108" alt="月令" />
 
-# 节气 · dsh-jieqi
+# 月令 · 二十四节气
 
 **二十四节气，落在输入框上方。**
 
@@ -13,8 +13,8 @@
 
 [![npm](https://img.shields.io/npm/v/dshjieqi-card?style=flat-square&label=npm&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![downloads](https://img.shields.io/npm/dm/dshjieqi-card?style=flat-square&label=downloads&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
-[![stars](https://img.shields.io/github/stars/SDSAEWQ/dsh-jieqi?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/dsh-jieqi/stargazers)
-[![ci](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml)
+[![stars](https://img.shields.io/github/stars/SDSAEWQ/yueling?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/yueling/stargazers)
+[![ci](https://github.com/SDSAEWQ/yueling/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/yueling/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square&labelColor=15171f)](LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.19-3c873a?style=flat-square&labelColor=15171f)]()
 [![platform](https://img.shields.io/badge/platform-DeepSeek%20Harness-4d6bfe?style=flat-square&labelColor=15171f)]()
@@ -27,7 +27,7 @@
 
 </div>
 
-<img src="docs/cover.png" alt="dsh-jieqi 封面" />
+<img src="docs/cover.png" alt="月令 封面" />
 
 > 卡面是真实组件在浏览器里独立渲染的（同一份 client.js），外壳为示意。
 
@@ -153,7 +153,7 @@ dshjieqi-card
 **从 GitHub 装**（npm 连不上、或想追仓库最新代码时用）：
 
 ~~~text
-github:SDSAEWQ/dsh-jieqi
+github:SDSAEWQ/yueling
 ~~~
 
 GitHub 那行不用再加子目录后缀 —— 仓库根目录本身就是插件包。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点 🫧
@@ -161,6 +161,8 @@ GitHub 那行不用再加子目录后缀 —— 仓库根目录本身就是插�
 > **❓ 为什么 npm 包名是 dshjieqi-card，不是 dshjieqi？** npm 上 dsh-jieqi 已经是别人的占位包（0.0.1，只有一个 README，没有 dsh manifest）；而 npm 会拒绝「只差标点」的新包名（防抢注），dshjieqi 被判 too similar 直接挡回来了。所以我们的包叫 dshjieqi-card，装出来的东西一模一样。
 >
 > ⚠️ 也别单独装 dsh-jieqi：那是空壳，装上去不会出现节气卡片。
+
+> 🏷 **仓库改名**：2026 年 10 月起仓库叫 **月令**（`SDSAEWQ/yueling`），旧地址 `SDSAEWQ/dsh-jieqi` 会 301 跳转；插件 ID（dsh-jieqi）、npm 包名（dshjieqi-card）和已装的人都不受影响。
 
 ### 方式二：插件市场索引（推荐）
 
@@ -170,11 +172,11 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 2. 切到 **发现** → **添加索引**，填入：
 
    ~~~text
-   https://cdn.jsdelivr.net/gh/SDSAEWQ/dsh-jieqi@main/market/index.json
+   https://cdn.jsdelivr.net/gh/SDSAEWQ/yueling@main/market/index.json
    ~~~
 
    （raw.githubusercontent.com 国内常常连不上，jsDelivr 更稳，两者内容一致。）
-3. 在 **发现** 页顶部的「搜索插件」框里直接打 dsh-jieqi（或翻列表找 **节气 · dsh-jieqi**），点卡片上的安装按钮
+3. 在 **发现** 页顶部的「搜索插件」框里直接打 dsh-jieqi（或翻列表找 **月令**），点卡片上的安装按钮
 
 安装完成后，jieqi skill 会随插件一起注册进会话技能目录，不需要再按方式四装一遍。
 
@@ -184,10 +186,10 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 >
 > ~~~text
 > dsh plugin --profile web add dshjieqi-card
-> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi
+> dsh plugin --profile web add github:SDSAEWQ/yueling
 > ~~~
 
-> 📮 提交到公共目录的条目在 market/awesome-entry.yml。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 dsh-jieqi 就能直接装。
+> 📮 提交到公共目录的条目在 market/awesome-entry.yml。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 dsh-jieqi 或 月令 就能直接装。
 
 > 🔏 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
 
@@ -348,13 +350,13 @@ npm test        # node test/smoke.mjs
 ## 🗂️ 目录结构
 
 ~~~text
-dsh-jieqi/                    ← 仓库根目录 = 插件包
+yueling/                      ← 仓库根目录 = 插件包（月令）
 ├─ package.json              dsh manifest、exports、npm 元信息
 ├─ cordis.patch.yml          挂载声明
 ├─ lib/
 │  ├─ astro.mjs              节气、干支、消息卦、三伏、数九的唯一实现
 │  ├─ index.js               宿主：两个只读 JSON 路由
-│  └─ client.js              浏览器：一颗圆点、四张卡面与六十四卦
+│  └─ client.js              浏览器：一颗圆点、六张卡面与六十四卦
 ├─ assets/jieqi/             内置 skill（SKILL.md + scripts + references）
 ├─ market/index.json         可添加的插件市场索引（format 1）
 ├─ test/smoke.mjs            零依赖冒烟测试（npm test）
