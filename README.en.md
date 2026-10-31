@@ -52,6 +52,22 @@ MIT · plugin 0.8.0 · DSH 0.2.x desktop · any platform with the Web GUI
 
 ## Install
 
+### Add plugin field (fastest)
+
+The **Plugins** page's **Add plugin** box takes a package name, a GitHub address
+or a local directory. Paste:
+
+~~~text
+github:SDSAEWQ/dsh-jieqi#path:/plugin
+~~~
+
+The plugin package sits in this repo's `plugin/` subdirectory, so `#path:/plugin`
+is required. Restart DSH (or press Ctrl+R in the window) and the dot appears
+above the composer.
+
+> Do not type just `dsh-jieqi`: that npm name belongs to an unrelated placeholder
+> (0.0.1 — a README and nothing else, no `dsh` manifest), so nothing would show up.
+
 ### Custom plugin market
 
 DSH ships no market itself. Two community entry points: the **dshmarket** plugin
@@ -69,10 +85,11 @@ GitHub.
 
    (jsDelivr beats raw.githubusercontent.com from mainland China; both serve the
    same file.)
-3. Install **Jieqi**. The market installs from git, so git must be on PATH.
+3. Type `dsh-jieqi` in the Discover search box and install the card. The
+   market installs from git, so git must be on PATH.
 
-> The npm name `dsh-jieqi` belongs to an unrelated placeholder package — do not
-> type `dsh-jieqi` into "add plugin", use the market card or the full spec:
+> Command-line equivalent (the desktop profile is usually locked by Electron,
+> so prefer the UI):
 >
 > ~~~text
 > dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin

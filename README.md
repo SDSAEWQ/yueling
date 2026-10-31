@@ -75,7 +75,19 @@
 
 ## 安装
 
-### 方式一：插件市场索引（推荐）
+### 方式一：插件页「添加插件」（最快）
+
+插件页右上角 **添加插件** 接受包名、GitHub 地址或本地目录，把这一行粘进去：
+
+~~~text
+github:SDSAEWQ/dsh-jieqi#path:/plugin
+~~~
+
+插件包在这个仓库的 `plugin/` 子目录里，所以 `#path:/plugin` 不能省。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点。
+
+> **别只填 `dsh-jieqi`。** npm 上这个包名属于别人的占位包（0.0.1，里面只有一个 README，没有 `dsh` manifest），装上去不会出现节气卡片。要一个短名字直接可装，得等 npm 那边让出名字，或者我们另发一个自己的包名。
+
+### 方式二：插件市场索引（推荐）
 
 DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读的是公共目录 https://awesome-dsh-plugin.com/plugins.json ；DSH 自带的 **发现** 页可以加任意「索引源」——索引就是一个普通 JSON，放在 GitHub 上即可。
 
@@ -87,13 +99,13 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
    ~~~
 
    （raw.githubusercontent.com 国内常常连不上，jsDelivr 更稳，两者内容一致。）
-3. 在列表里找到 **节气 · dsh-jieqi**，点安装
+3. 在 **发现** 页顶部的「搜索插件」框里直接打 `dsh-jieqi`（或翻列表找 **节气 · dsh-jieqi**），点卡片上的安装按钮
 
-安装完成后，`jieqi` skill 会随插件一起注册进会话技能目录，不需要再按方式三装一遍。
+安装完成后，`jieqi` skill 会随插件一起注册进会话技能目录，不需要再按方式四装一遍。
 
 注意：市场安装走 git 源，本机需要装有 git。没有 git 就用下面的手动方式。
 
-> npm 上的 `dsh-jieqi` 是别人的同名占位包。**别**在「添加插件」里只输 `dsh-jieqi`——那会装错包。用市场卡片，或者输入完整地址：
+> 命令行等价写法（桌面版 profile 常被 Electron 独占，能走界面就走界面）：
 >
 > ~~~text
 > dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
@@ -103,7 +115,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 
 > 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
 
-### 方式二：手动安装（不需要 git）
+### 方式三：手动安装（不需要 git）
 
 1. 下载本仓库（Code → Download ZIP），把 **plugin** 目录整个复制到：
 
@@ -147,9 +159,9 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 
 > 桌面版的 profile 由 Electron 独占管理，命令行 dsh plugin --profile desktop 会被拒绝，只能按上面改文件。
 
-### 方式三：只装 skill（给模型用，不是卡片）
+### 方式四：只装 skill（给模型用，不是卡片）
 
-如果已经用方式一装了插件，这一步可以跳过——skill 已经在插件里。
+如果已经用方式一或方式二装了插件，这一步可以跳过——skill 已经在插件里。
 
 把 **skill/jieqi** 整个目录复制到：
 
