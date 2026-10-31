@@ -14,6 +14,7 @@ Hover it and it blooms into today's card. The whole card is draggable, and one c
 [![npm](https://img.shields.io/npm/v/dshjieqi-card?style=flat-square&label=npm&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![downloads](https://img.shields.io/npm/dm/dshjieqi-card?style=flat-square&label=downloads&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![stars](https://img.shields.io/github/stars/SDSAEWQ/dsh-jieqi?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/dsh-jieqi/stargazers)
+[![ci](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square&labelColor=15171f)](LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.19-3c873a?style=flat-square&labelColor=15171f)]()
 [![platform](https://img.shields.io/badge/platform-DeepSeek%20Harness-4d6bfe?style=flat-square&labelColor=15171f)]()
@@ -30,6 +31,14 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 > The card faces are the real component rendered standalone in a browser (same client.js); the outer shell is illustrative.
 
+<div align="center">
+
+<img src="docs/demo.gif" width="244" alt="The dot swelling into the card like a bubble" />
+
+<sub>🫧 Hover the dot and the card swells out of it — recorded, not mocked up</sub>
+
+</div>
+
 ---
 
 ## ✨ What it is
@@ -38,7 +47,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 | :---: | --- |
 | 🎯 **One dot** | No sidebar slot, no focus steal, collapses when the mouse leaves |
 | 🧮 **Computed locally** | Sun's apparent longitude + ΔT, works offline |
-| 🀄 **The old calendar** | Sexagenary year · month branch · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
+| 🀄 **The old calendar** | Sexagenary year · month branch · day pillar · double-hour · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
 | 📋 **One line** | Click anywhere on the card to copy today as a single summary |
 | 🎲 **Cast a hexagram** | Three coins, six throws, six lines settle bottom-up, one sentence of meaning |
 | 🫧 **Drag anything** | The whole card moves; park it at an edge to leave a slim tab |
@@ -55,7 +64,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ## 🎑 Four faces
 
-| 🌤 Today · term · tip · countdown | 🍃 Pentads · days left in each |
+| 🌤 Today · term · day pillar · tip · countdown | 🍃 Pentads · days left in each |
 | :---: | :---: |
 | ![today](docs/today.png) | ![pentads](docs/hou.png) |
 | 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram · casting |
@@ -67,7 +76,8 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ### 1. Today
 
-- 🗓 Sexagenary year (switches at 立春), month branch (switches at the 12 节), Gregorian date
+- 🗓 Sexagenary year (switches at 立春), month branch (switches at the 12 节), day pillar (rolls over at Beijing midnight), Gregorian date
+- 🕰 The double-hour you are in right now (子时 spans 23:00–01:00), with its stem derived from the day stem by the five-rats rule; hover the line to see 庚申时 · 15-17
 - 🌡 Term name, exact transition instant, day within the term
 - 🍃 Which of the 72 pentads today falls in; tap through for all three
 - ⏳ Days and hours until the next term, with a thin progress bar; a live countdown on the term day
@@ -241,9 +251,17 @@ node scripts/jieqi.mjs --year
   "dayInTerm": 8,
   "tip": "燥寒并至，宜平补（山药、栗子），护胃护膝，忌过食辛辣",
   "next": { "name": "立冬", "at": "2026-11-07T17:49:00+08:00", "days": 8 },
-  "ganzhi": { "year": "丙午", "monthBranch": "戌", "monthStart": "寒露" }
+  "ganzhi": {
+    "year": "丙午",
+    "monthBranch": "戌",
+    "monthStart": "寒露",
+    "day": { "index": 14, "name": "戊寅" },
+    "hour": { "index": 8, "name": "申时", "full": "庚申时", "range": "15-17" }
+  }
 }
 ~~~
+
+ganzhi.hour is only filled in when date is omitted (that is, for today); with ?date= it is null, because a past day has no "what time is it now".
 
 The client calls this local route only; no external requests.
 
@@ -259,6 +277,20 @@ The client calls this local route only; no external requests.
 
 ---
 
+## 🧪 Development
+
+Zero dependencies, no build step:
+
+~~~text
+npm test        # node test/smoke.mjs
+~~~
+
+The smoke test loads client.js into a fake window inside plain Node, checks that the module loader can take it and that apply() registers the slots, pins a few day-pillar anchors (2026-10-31 is 戊寅, 1949-10-01 is 甲子, 2024-02-10 is 甲辰), asserts that lib/astro.mjs and assets/jieqi/scripts/astro.mjs are byte-identical, that both routes answer 200, and that the bundled skill body carries no YAML frontmatter.
+
+On push, GitHub Actions (.github/workflows/ci.yml) runs the same set: node --check on five files plus npm test.
+
+---
+
 ## 🗂️ Layout
 
 ~~~text
@@ -271,7 +303,9 @@ dsh-jieqi/                  ← repository root = the plugin package
 │  └─ client.js            browser: the dot, four faces, the hexagrams
 ├─ assets/jieqi/           bundled skill (SKILL.md + scripts + references)
 ├─ market/index.json       index you can add to the marketplace
-├─ docs/                   screenshots, icon and BEHAVIOUR.md
+├─ test/smoke.mjs          zero-dependency smoke test (npm test)
+├─ .github/workflows/      ci.yml: syntax + smoke
+├─ docs/                   screenshots, demo gif, icon and BEHAVIOUR.md
 ├─ README.md / README.en.md
 └─ CHANGELOG.md
 ~~~

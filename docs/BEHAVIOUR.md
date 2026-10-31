@@ -84,6 +84,13 @@ already resolved, so the model can run it directly. There is no separate copy an
 - Under the 候 line sits one line of the season's own advice — `燥寒并至，宜平补…`
   for 霜降 — taken from the bundled skill's 节气养生速查 table, clamped to two
   lines with the full sentence in the tooltip. The route ships it as `tip`.
+- The line under the term name carries the day pillar and the double-hour —
+  `戊寅日 · 申时` on the left, the term instant right-aligned on the other
+  side. The day pillar rolls over at Beijing midnight; the double-hour spans two
+  hours with 子时 straddling 23:00–01:00, and its stem is derived from the day
+  stem by the five-rats rule (五鼠遁). The tooltip spells out `庚申时 · 15-17`.
+  A dated `?date=` lookup has no live hour, so the route answers `null` there
+  instead of inventing one.
 - The countdown speaks in hours, not just days: `距立冬 6 天 17 小时`, the exact
   instant in its tooltip, and on the term day itself a live countdown to the
   minute (`距霜降 交节 43 分钟`) until the moment passes.

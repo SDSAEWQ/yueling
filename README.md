@@ -14,6 +14,7 @@
 [![npm](https://img.shields.io/npm/v/dshjieqi-card?style=flat-square&label=npm&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![downloads](https://img.shields.io/npm/dm/dshjieqi-card?style=flat-square&label=downloads&color=4d6bfe&labelColor=15171f)](https://www.npmjs.com/package/dshjieqi-card)
 [![stars](https://img.shields.io/github/stars/SDSAEWQ/dsh-jieqi?style=flat-square&label=stars&color=4d6bfe&labelColor=15171f)](https://github.com/SDSAEWQ/dsh-jieqi/stargazers)
+[![ci](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml/badge.svg)](https://github.com/SDSAEWQ/dsh-jieqi/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-4d6bfe?style=flat-square&labelColor=15171f)](LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.19-3c873a?style=flat-square&labelColor=15171f)]()
 [![platform](https://img.shields.io/badge/platform-DeepSeek%20Harness-4d6bfe?style=flat-square&labelColor=15171f)]()
@@ -30,6 +31,14 @@
 
 > 卡面是真实组件在浏览器里独立渲染的（同一份 client.js），外壳为示意。
 
+<div align="center">
+
+<img src="docs/demo.gif" width="244" alt="圆点像个气泡一样鼓成卡片" />
+
+<sub>🫧 悬停圆点，卡片从圆点里鼓出来 —— 真录屏，不是示意</sub>
+
+</div>
+
 ---
 
 ## ✨ 它是什么
@@ -38,7 +47,7 @@
 | :---: | --- |
 | 🎯 **一颗点** | 不占侧栏、不抢焦点，鼠标移开自己收起 |
 | 🧮 **本地算** | 太阳视黄经 + ΔT 修正，断网也算得出 |
-| 🀄 **老历法** | 干支年 · 月建 · 七十二候 · 十二消息卦 · 三伏数九 |
+| 🀄 **老历法** | 干支年 · 月建 · 日柱时辰 · 七十二候 · 十二消息卦 · 三伏数九 |
 | 📋 **一句话** | 点卡片任意处，把今天复制成一行摘要 |
 | 🎲 **摇一卦** | 三枚铜钱六掷，六爻自下而上落定，给一句话卦意 |
 | 🫧 **随手拖** | 整张卡能拖着走，拖到边缘收成半隐藏的窄标签 |
@@ -55,7 +64,7 @@
 
 ## 🎑 四种卡面
 
-| 🌤 今天 · 节气 · 养生 · 距离 | 🍃 三候 · 每一候还剩几天 |
+| 🌤 今天 · 节气 · 日柱 · 养生 · 距离 | 🍃 三候 · 每一候还剩几天 |
 | :---: | :---: |
 | ![今天](docs/today.png) | ![三候](docs/hou.png) |
 | 📅 **年表** · 全年二十四次交节 | ☯️ **消息卦** · 月建 · 十二消息卦 · 摇一卦 |
@@ -67,7 +76,8 @@
 
 ### 一、看今天
 
-- 🗓 **干支年**（立春换年）、**月建**（十二节换月，立春起寅）、公历日期
+- 🗓 **干支年**（立春换年）、**月建**（十二节换月，立春起寅）、**日柱**（按北京时间零点换日）、公历日期
+- 🕰 **时辰**：现在走到哪一个时辰（子时 23:00–01:00），时辰天干按五鼠遁从日干推出来；鼠标停在「戊寅日 · 申时」上能看到完整的「庚申时 · 15-17」
 - 🌡 节气名、交节时刻、进入该节气的第几天
 - 🍃 当前处于哪一候（七十二候），点开看三候的完整分段
 - ⏳ 距下一个节气还有几天几小时，底部一条细进度条；交节当天换成实时倒计时
@@ -287,9 +297,17 @@ node scripts/jieqi.mjs --year         # 附当年 24 节气全表
   "dayInTerm": 8,
   "tip": "燥寒并至，宜平补（山药、栗子），护胃护膝，忌过食辛辣",
   "next": { "name": "立冬", "at": "2026-11-07T17:49:00+08:00", "days": 8 },
-  "ganzhi": { "year": "丙午", "monthBranch": "戌", "monthStart": "寒露" }
+  "ganzhi": {
+    "year": "丙午",
+    "monthBranch": "戌",
+    "monthStart": "寒露",
+    "day": { "index": 14, "name": "戊寅" },
+    "hour": { "index": 8, "name": "申时", "full": "庚申时", "range": "15-17" }
+  }
 }
 ~~~
+
+ganzhi.hour 只在省略 date（也就是「今天」）时给值；带 ?date= 查历史某天时它是 null，因为那一天没有「现在几点」。
 
 客户端只请求这一个本地路由，不发任何外网请求。
 
@@ -306,6 +324,20 @@ node scripts/jieqi.mjs --year         # 附当年 24 节气全表
 
 ---
 
+## 🧪 开发
+
+零依赖，不需要打包：
+
+~~~text
+npm test        # node test/smoke.mjs
+~~~
+
+冒烟测试在 Node 里把 client.js 装进一个假 window（没有浏览器），验证它能被模块加载器接住、apply 能挂上 slots；再跑交节算法的几个锚点（2026-10-31 是戊寅日、1949-10-01 甲子、2024-02-10 甲辰）、断言 lib/astro.mjs 与 assets/jieqi/scripts/astro.mjs 两份逐字节相同、两个路由真的回 200、内置 skill 的正文不带 YAML frontmatter。
+
+推上去之后 GitHub Actions（.github/workflows/ci.yml）会跑同样一套：五个文件 node --check + npm test。
+
+---
+
 ## 🗂️ 目录结构
 
 ~~~text
@@ -318,7 +350,9 @@ dsh-jieqi/                    ← 仓库根目录 = 插件包
 │  └─ client.js              浏览器：一颗圆点、四张卡面与六十四卦
 ├─ assets/jieqi/             内置 skill（SKILL.md + scripts + references）
 ├─ market/index.json         可添加的插件市场索引（format 1）
-├─ docs/                     截图、图标与 BEHAVIOUR.md
+├─ test/smoke.mjs            零依赖冒烟测试（npm test）
+├─ .github/workflows/ci.yml  GitHub Actions：语法 + 冒烟
+├─ docs/                     截图、动图、图标与 BEHAVIOUR.md
 ├─ README.md / README.en.md  两份展示版说明
 └─ CHANGELOG.md
 ~~~

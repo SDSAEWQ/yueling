@@ -185,6 +185,33 @@ export function dayIndex(dayNum) {
   return (((dayNum + 17) % 60) + 60) % 60
 }
 
+/** The sexagenary day: 0 = 甲子, 10 = 甲戌, and so on. */
+export function dayGanzhi(dayNum) {
+  const index = dayIndex(dayNum)
+  const stem = STEMS[index % 10]
+  const branch = BRANCHES[index % 12]
+  return { index, stem, branch, name: stem + branch }
+}
+
+/**
+ * 时辰: a two-hour branch, 子时 spanning 23:00-01:00. Its stem follows the
+ * day's own stem (五鼠遁: 甲己日甲子时, 乙庚日丙子时, 丙辛日戊子时 ...).
+ */
+export function hourGanzhi(date) {
+  const hours = beijing(date).getUTCHours()
+  const index = Math.floor(((hours + 1) % 24) / 2)
+  const start = index === 0 ? 23 : index * 2 - 1
+  const pad = (value) => String(value).padStart(2, '0')
+  const day = dayGanzhi(dayNumber(date))
+  const stem = STEMS[((day.index % 5) * 2 + index) % 10]
+  return {
+    index,
+    name: BRANCHES[index] + '时',
+    full: stem + BRANCHES[index] + '时',
+    range: pad(start) + '-' + pad((start + 2) % 24),
+  }
+}
+
 /** First 庚 day on or after the given day number. */
 export function nextGeng(dayNum) {
   let d = dayNum
@@ -285,6 +312,9 @@ export function solarTerm(date) {
       year: ganzhiYear(gzYear),
       monthBranch: branch,
       monthStart: monthStart ? monthStart.name : '',
+      day: dayGanzhi(today),
+      // A dated lookup has no live hour; only today does.
+      hour: date ? null : hourGanzhi(at),
     },
     hexagram: gua ? { name: gua.name, symbol: gua.symbol, line: gua.line, lines: gua.lines } : null,
     fu: fuAt(today, fuOfYear(year)),
