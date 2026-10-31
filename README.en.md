@@ -123,6 +123,8 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ## 📦 Install
 
+> 📦 The repository root is the package: `package.json`, `cordis.patch.yml`, `lib/` and `assets/` sit at the top (no `plugin/` subdirectory since 0.9.1), so the package name, the GitHub address and a local folder all point at the same place.
+
 ### Option 1 — “Add plugin” page (fastest ✅)
 
 The plugin page accepts a package name, a GitHub address or a local folder.
@@ -136,10 +138,10 @@ dshjieqi-card
 **From GitHub** (when npm is unreachable, or you want the latest commit):
 
 ~~~text
-github:SDSAEWQ/dsh-jieqi#path:/plugin
+github:SDSAEWQ/dsh-jieqi
 ~~~
 
-The #path:/plugin suffix is required — the package lives in the plugin/ subdirectory. Restart DSH (or press Ctrl+R), and a dot appears above the input box 🫧
+No #path suffix needed — the repository root is the package. Restart DSH (or press Ctrl+R), and a dot appears above the input box 🫧
 
 > **❓ Why is the npm name dshjieqi-card and not dshjieqi?** dsh-jieqi is already taken by a placeholder package (0.0.1, README only, no dsh manifest), and npm rejects new names that differ only in punctuation — dshjieqi was rejected as “too similar”. Same plugin, different name.
 >
@@ -165,12 +167,12 @@ The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 >
 > ~~~text
 > dsh plugin --profile web add dshjieqi-card
-> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
+> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi
 > ~~~
 
 ### Option 3 — Manual (no git)
 
-1. Download the repo (Code → Download ZIP) and copy **plugin/** to **%USERPROFILE%\.dsh\plugins\dsh-jieqi**
+1. Download the repo (Code → Download ZIP) and copy the repository root to **%USERPROFILE%\.dsh\plugins\dsh-jieqi** (`docs/` and `market/` are optional)
 2. Add a local link dependency in **%USERPROFILE%\.dsh\profiles\desktop\package.json** and append dsh-jieqi to dsh.profile.bundles
 3. Append the insert patch to **cordis.patch.yml**:
 
@@ -188,7 +190,7 @@ The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 
 ### Option 4 — Skill only (for the model, not the card)
 
-Copy **skill/jieqi** to **%USERPROFILE%\.agents\skills\jieqi**. Then ask “which solar term is today”, “how many days to 立冬”, or run it directly:
+Copy **assets/jieqi** to **%USERPROFILE%\.agents\skills\jieqi**. Then ask “which solar term is today”, “how many days to 立冬”, or run it directly:
 
 ~~~text
 node scripts/jieqi.mjs
@@ -260,11 +262,18 @@ The client calls this local route only; no external requests.
 ## 🗂️ Layout
 
 ~~~text
-dsh-jieqi/
-├─ plugin/                 the DSH plugin (host + browser + algorithm)
-├─ skill/jieqi/            standalone skill: CLI, SKILL.md, references
+dsh-jieqi/                  ← repository root = the plugin package
+├─ package.json            dsh manifest, exports, npm metadata
+├─ cordis.patch.yml        mount declaration
+├─ lib/
+│  ├─ astro.mjs            the only implementation of the term maths
+│  ├─ index.js             host: two read-only JSON routes
+│  └─ client.js            browser: the dot, four faces, the hexagrams
+├─ assets/jieqi/           bundled skill (SKILL.md + scripts + references)
 ├─ market/index.json       index you can add to the marketplace
-└─ docs/                   screenshots and icon
+├─ docs/                   screenshots, icon and BEHAVIOUR.md
+├─ README.md / README.en.md
+└─ CHANGELOG.md
 ~~~
 
 ## 🧹 Uninstall

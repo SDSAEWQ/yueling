@@ -1,4 +1,6 @@
-# dsh-jieqi
+# dsh-jieqi · behaviour reference
+
+> Implementation-level notes for the plugin as it ships in this repository (0.9.1: the repository root is the package). User-facing docs: [../README.md](../README.md) / [../README.en.md](../README.en.md).
 
 对话区标题栏下沿的一颗小圆点：把鼠标放上去，就展开今天的节气。
 
@@ -11,8 +13,7 @@ we are in, the day count, and how far the next term is.
 The package also ships the `jieqi` skill in `assets/jieqi/` and registers it on
 the Host through `ctx.skills`. Installing the plugin therefore adds both the
 card and the skill; the skill body is served with the installed script path
-already resolved, so the model can run it directly. A standalone copy still
-lives in `skill/jieqi/` at the repository root.
+already resolved, so the model can run it directly. There is no separate copy any more: `assets/jieqi/` is the only one.
 
 ## What it is
 

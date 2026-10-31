@@ -1,5 +1,11 @@
 # dsh-jieqi 变更记录
 
+## 0.9.1 — 2026-10-31
+
+- 整个仓库就是插件包了：`package.json`、`cordis.patch.yml`、`lib/`、`assets/` 搬到仓库根目录，`plugin/` 子目录取消。GitHub 安装地址不再需要 `#path:/plugin`，`github:SDSAEWQ/dsh-jieqi` 直接可装；市场索引里的新版本也不再写 `path`。
+- skill 只留一份：删掉仓库根的 `skill/jieqi`（原本与 `assets/jieqi` 逐文件相同），只装 skill 的人改从 `assets/jieqi` 复制，免得两处算法慢慢跑偏。
+- 那份讲实现细节的英文 README 挪到 `docs/BEHAVIOUR.md`，仓库首页只留中英两份展示版；`package.json` 补了 `repository` / `homepage` / `bugs`。
+
 ## 0.9.0 — 2026-10-31
 
 - 卦页多了铜钱摇卦：三枚铜钱掷六次，一背记 3、一字记 2，合计 6/7/8/9 读作老阴/少阳/少阴/老阳 —— 就是卦摊上那套「以钱代蓍」。六爻自初爻往上一爻一爻落下（112ms 一爻，系统关了动效就直接落定），动爻用品牌色画出来，旁边标 ○ 或 ×。

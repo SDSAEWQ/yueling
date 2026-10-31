@@ -123,6 +123,8 @@
 
 ## 📦 安装
 
+> 📦 整个仓库就是插件包：`package.json`、`cordis.patch.yml`、`lib/`、`assets/` 都在根目录上（0.9.1 起不再有 `plugin/` 子目录），所以包名、GitHub 地址、本地目录三种装法都指向仓库根。
+
 ### 方式一：插件页「添加插件」（最快）
 
 插件页右上角 **添加插件** 接受包名、GitHub 地址或本地目录。
@@ -136,10 +138,10 @@ dshjieqi-card
 **从 GitHub 装**（npm 连不上、或想追仓库最新代码时用）：
 
 ~~~text
-github:SDSAEWQ/dsh-jieqi#path:/plugin
+github:SDSAEWQ/dsh-jieqi
 ~~~
 
-GitHub 那行的 #path:/plugin 不能省 —— 插件包在这个仓库的 plugin/ 子目录里。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点 🫧
+GitHub 那行不用再加子目录后缀 —— 仓库根目录本身就是插件包。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点 🫧
 
 > **❓ 为什么 npm 包名是 dshjieqi-card，不是 dshjieqi？** npm 上 dsh-jieqi 已经是别人的占位包（0.0.1，只有一个 README，没有 dsh manifest）；而 npm 会拒绝「只差标点」的新包名（防抢注），dshjieqi 被判 too similar 直接挡回来了。所以我们的包叫 dshjieqi-card，装出来的东西一模一样。
 >
@@ -167,7 +169,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 >
 > ~~~text
 > dsh plugin --profile web add dshjieqi-card
-> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
+> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi
 > ~~~
 
 > 📮 提交到公共目录的条目在 market/awesome-entry.yml。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 dsh-jieqi 就能直接装。
@@ -176,7 +178,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 
 ### 方式三：手动安装（不需要 git）
 
-1. 下载本仓库（Code → Download ZIP），把 **plugin** 目录整个复制到：
+1. 下载本仓库（Code → Download ZIP），把仓库根目录整个复制到（`docs/`、`market/` 两份可以不要）：
 
    ~~~text
    %USERPROFILE%\.dsh\plugins\dsh-jieqi
@@ -222,7 +224,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 
 如果已经用方式一或方式二装了插件，这一步可以跳过 —— skill 已经在插件里。
 
-把 **skill/jieqi** 整个目录复制到：
+把 **assets/jieqi** 整个目录复制到：
 
 ~~~text
 %USERPROFILE%\.agents\skills\jieqi
@@ -307,20 +309,18 @@ node scripts/jieqi.mjs --year         # 附当年 24 节气全表
 ## 🗂️ 目录结构
 
 ~~~text
-dsh-jieqi/
-├─ plugin/                 DSH 插件（宿主 + 浏览器 + 算法）
-│  ├─ lib/astro.mjs        节气、干支、消息卦、三伏、数九的唯一实现
-│  ├─ lib/index.js         宿主：两个只读 JSON 路由
-│  ├─ lib/client.js        浏览器：一颗圆点、四张卡面与六十四卦
-│  ├─ assets/jieqi/        内置 skill（SKILL.md + scripts + references）
-│  ├─ cordis.patch.yml     挂载声明
-│  └─ package.json
-├─ skill/jieqi/            同名 skill：命令行 + SKILL.md + 养生速查
-│  ├─ scripts/astro.mjs    与插件同一份算法
-│  ├─ scripts/jieqi.mjs    CLI
-│  └─ references/
-├─ market/index.json       可添加的插件市场索引（format 1）
-└─ docs/                   截图与图标
+dsh-jieqi/                    ← 仓库根目录 = 插件包
+├─ package.json              dsh manifest、exports、npm 元信息
+├─ cordis.patch.yml          挂载声明
+├─ lib/
+│  ├─ astro.mjs              节气、干支、消息卦、三伏、数九的唯一实现
+│  ├─ index.js               宿主：两个只读 JSON 路由
+│  └─ client.js              浏览器：一颗圆点、四张卡面与六十四卦
+├─ assets/jieqi/             内置 skill（SKILL.md + scripts + references）
+├─ market/index.json         可添加的插件市场索引（format 1）
+├─ docs/                     截图、图标与 BEHAVIOUR.md
+├─ README.md / README.en.md  两份展示版说明
+└─ CHANGELOG.md
 ~~~
 
 ---
@@ -344,7 +344,7 @@ localStorage 里的 dsh-jieqi.* 键可留可删，不影响其他功能。
 
 ## 🌏 English
 
-A short English README lives in [README.en.md](README.en.md). The detailed behaviour reference is in [plugin/README.md](plugin/README.md).
+A short English README lives in [README.en.md](README.en.md). The detailed behaviour reference is in [docs/BEHAVIOUR.md](docs/BEHAVIOUR.md).
 
 ## 📄 License
 

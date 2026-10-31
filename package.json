@@ -1,6 +1,6 @@
 {
   "name": "dsh-jieqi",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "二十四节气卡片 + 内置 jieqi skill：对话区标题栏下沿的一颗小圆点，悬停展开今天的节气、七十二候、消息卦、养生一句与年表，整张卡片可拖动，卦页还能铜钱摇一卦 · A quiet drag-anywhere solar-term dot under the conversation header, with the jieqi skill bundled.",
   "license": "MIT",
   "type": "module",
@@ -16,6 +16,7 @@
     "assets",
     "cordis.patch.yml",
     "README.md",
+    "README.en.md",
     "CHANGELOG.md"
   ],
   "engines": {
@@ -40,5 +41,13 @@
     "client": {
       "platform": "web"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SDSAEWQ/dsh-jieqi.git"
+  },
+  "homepage": "https://github.com/SDSAEWQ/dsh-jieqi#readme",
+  "bugs": {
+    "url": "https://github.com/SDSAEWQ/dsh-jieqi/issues"
   }
 }
