@@ -91,9 +91,16 @@ already resolved, so the model can run it directly. There is no separate copy an
   stem by the five-rats rule (五鼠遁). The tooltip spells out `庚申时 · 15-17`.
   A dated `?date=` lookup has no live hour, so the route answers `null` there
   instead of inventing one.
-- The countdown speaks in hours, not just days: `距立冬 6 天 17 小时`, the exact
-  instant in its tooltip, and on the term day itself a live countdown to the
-  minute (`距霜降 交节 43 分钟`) until the moment passes.
+- The countdown speaks in days and 时辰 (two-hour stretches), not just days:
+  `距立冬 7 天 1 时辰`; under an hour it falls back to minutes, and the exact
+  instant sits in its tooltip. On the term day itself it becomes a live countdown
+  to the minute (`距霜降 交节 43 分钟`) until the moment passes.
+- The day-pillar line (`戊寅日 · 申时`) is a button: it opens a fourth page with
+  the day count, the 纳音 (two consecutive 干支 share one, so 戊寅 is 城头土), the
+  旬 it belongs to (甲戌旬), and three neutral lines — 日干, 日支 and the current
+  时辰, each with one sentence about what the day suits. It is written as a
+  reading aid only: no 吉凶, no 宜忌, and the footer says so. `‹` or `Esc`
+  returns to the front page.
 - `Esc` folds the card from any page: on a sub-page it steps back to the front
   page, on the front page it puts the card away and releases the pin with it.
 - The first time it ever loads, the dot stays at full strength and the card
@@ -116,8 +123,11 @@ already resolved, so the model can run it directly. There is no separate copy an
   under reduced motion — moving lines drawn in the accent colour with ○ or ×
   beside them; the sixth brings the primary hexagram, the changed one, its
   trigrams and one sentence. 「复制卦意」 copies the reading, 「再摇一卦」
-  throws again, and the throw is kept in `dsh-jieqi.cast` (`{ date, values }`),
-  so the card shows the same result until the date changes.
+  throws again. Throws are kept in `dsh-jieqi.castlog` (`[{ date, values }]`,
+  seven days at most; a re-throw replaces its own day), so the card shows the
+  same result until the date changes; a row of date chips under the throw walks
+  back through the past week (today highlighted, `今天` as its label), and tapping
+  it returns. Entries older than six days are dropped on write.
 - When 三伏 or 数九 is running, the countdown line leads with it instead of
   only counting to the next term: `初伏 6 天 · 距大暑 3 天`, `一九 4 天 ·
   距小寒 11 天`. 初伏 is the third 庚 day after 夏至, 末伏 the first 庚 day
@@ -147,14 +157,15 @@ already resolved, so the model can run it directly. There is no separate copy an
   `dsh-jieqi.mode` (`free` or `edge` when the dot was parked away from the
   rail), `dsh-jieqi.pos` (that point: JSON `{ x, y }` for `free`,
   `{ side, y }` for `edge`),
-  `dsh-jieqi.page` (`year`, `hou` or `gua`; absent on the front page),
+  `dsh-jieqi.page` (`year`, `hou`, `gua` or `day`; absent on the front page),
   `dsh-jieqi.pinned` (`1` while the card is pinned open),
   `dsh-jieqi.dismissed` (date the card was folded away),
   `dsh-jieqi.announced` / `dsh-jieqi.notified` (term instant already handled),
   `dsh-jieqi.told` (the day's toast already shown),
   `dsh-jieqi.permission-asked`, `dsh-jieqi.accent` (auto | brand | tint key),
   `dsh-jieqi.hinted` (`1` once the first-run line has been shown),
-  `dsh-jieqi.cast` (`{ date, values }`: the day's six throws, dropped when the
-  date no longer matches).
+  `dsh-jieqi.cast` (`{ date, values }`: today's six throws, dropped when the
+  date no longer matches), `dsh-jieqi.castlog` (the last seven days' throws, each
+  `{ date, values }`, pruned to six days back on every write).
 - The 七十二候 table is hard-coded in `lib/client.js` (HOU), three lines per
   term; the 候 boundaries are thirds of the actual term length, not of 15 days.

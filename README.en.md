@@ -57,18 +57,21 @@ Every transition instant is computed locally from the sun's apparent longitude
 ~~~text
 ⬤ dot ── hover ──▶ 🌤 today ──┬── tap pentad ──▶ 🍃 pentads
                               ├── tap calendar ─▶ 📅 year table
-                              └── tap hexagram ▶ ☯️ hexagram ▶ 🎲 cast
+                              ├── tap day pillar ▶ 🧭 day pillar · what suits today
+                              └── tap hexagram ▶ ☯️ hexagram · cast · 7-day log
 ~~~
 
 ---
 
-## 🎑 Four faces
+## 🎑 Six faces
 
 | 🌤 Today · term · day pillar · tip · countdown | 🍃 Pentads · days left in each |
 | :---: | :---: |
 | ![today](docs/today.png) | ![pentads](docs/hou.png) |
 | 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram · casting |
 | ![year](docs/year.png) | ![hexagram](docs/gua.png) |
+| 🧭 **Day pillar** · nayin · decade · what suits today | 🗂️ **Seven days** · the casts of the past week |
+| ![day pillar](docs/day.png) | ![seven days](docs/guaold.png) |
 
 ---
 
@@ -78,9 +81,10 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 - 🗓 Sexagenary year (switches at 立春), month branch (switches at the 12 节), day pillar (rolls over at Beijing midnight), Gregorian date
 - 🕰 The double-hour you are in right now (子时 spans 23:00–01:00), with its stem derived from the day stem by the five-rats rule; hover the line to see 庚申时 · 15-17
+- 🧭 **Day pillar page**: tap that line for the day count, 纳音 (e.g. 城头土), the decade it falls in (甲戌旬), and one neutral sentence each for the stem, the branch and the current double-hour — what suits today, never fortune-telling
 - 🌡 Term name, exact transition instant, day within the term
 - 🍃 Which of the 72 pentads today falls in; tap through for all three
-- ⏳ Days and hours until the next term, with a thin progress bar; a live countdown on the term day
+- ⏳ Days and **double-hours** until the next term (1 时辰 = 2 hours, e.g. 「距立冬 7 天 1 时辰」), with a thin progress bar; a live countdown on the term day
 - 🥣 A one-line seasonal tip (from the bundled 节气养生速查 reference)
 - ☯️ The sovereign hexagram for the month branch, drawn with six lines
 - 🎲 The 卦 page can cast: three coins six times, six lines landing bottom-up, the primary and changed hexagram, one sentence of meaning
@@ -117,7 +121,8 @@ Every transition instant is computed locally from the sun's apparent longitude
 - ⬇️ The six lines land one at a time from the bottom (112 ms each); moving lines are marked ○ or ×, then the primary and changed hexagram are read out
 - 🧾 One sentence per hexagram, all sixty-four: 「大过：栋梁将挠 —— 非常之时行非常之举，但别硬撑」
 - 📋 「复制卦意」 copies the date, number, trigrams, moving lines, changed hexagram and the sentence; 「再摇一卦」 throws again
-- 💾 The day's cast is remembered across page switches and restarts and expires the next day; reduced motion settles it at once
+- 🗂️ Casts stay for seven days: a row of date chips at the bottom of the 卦 page (today / 10/30 / 10/28 …) switches the view, the today chip is highlighted, tap it to come back; older entries fall off
+- 💾 Today's cast is remembered across page switches and restarts; reduced motion settles it at once
 
 ### 6. Details
 
@@ -226,6 +231,8 @@ node scripts/jieqi.mjs --year
 | 🍃 Tap the pentad line | Pentads page |
 | 📅 Tap the calendar icon | Year table, ‹ › to change year |
 | ☯️ Tap the hexagram | Hexagram page |
+| 🧭 Tap 「戊寅日 · 申时」 | Day pillar page: nayin, decade, what suits today |
+| 🗂️ Tap a date chip on the 卦 page | Review a past cast |
 | 🎲 Tap 「摇一卦」 | Three coins, six throws, lines land one by one |
 | 📋 Tap 「复制卦意」 | Copies the hexagram and its sentence |
 | 🎨 Tap a palette dot | Eight palettes |
