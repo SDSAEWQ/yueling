@@ -54,15 +54,33 @@ MIT · plugin 0.8.0 · DSH 0.2.x desktop · any platform with the Web GUI
 
 ### Custom plugin market
 
+DSH ships no market itself. Two community entry points: the **dshmarket** plugin
+reads the public catalogue at https://awesome-dsh-plugin.com/plugins.json , and
+DSH's own **Discover** page accepts any *index source* — a plain JSON file on
+GitHub.
+
 1. **Plugins** → **Experimental plugins** → **More** → enable **custom plugin
    market**.
 2. **Discover** → **Add index**:
 
    ~~~text
-   https://raw.githubusercontent.com/SDSAEWQ/dsh-jieqi/main/market/index.json
+   https://cdn.jsdelivr.net/gh/SDSAEWQ/dsh-jieqi@main/market/index.json
    ~~~
 
+   (jsDelivr beats raw.githubusercontent.com from mainland China; both serve the
+   same file.)
 3. Install **Jieqi**. The market installs from git, so git must be on PATH.
+
+> The npm name `dsh-jieqi` belongs to an unrelated placeholder package — do not
+> type `dsh-jieqi` into "add plugin", use the market card or the full spec:
+>
+> ~~~text
+> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
+> ~~~
+
+> The entry submitted to the public catalogue lives in
+> `market/awesome-entry.yml`; once merged, searching `dsh-jieqi` inside
+> dshmarket installs it.
 
 ### Manually (no git)
 

@@ -77,20 +77,29 @@
 
 ### 方式一：插件市场索引（推荐）
 
-DSH 没有官方市场，市场索引就是一个普通 JSON，放在 GitHub 上即可。
+DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读的是公共目录 https://awesome-dsh-plugin.com/plugins.json ；DSH 自带的 **发现** 页可以加任意「索引源」——索引就是一个普通 JSON，放在 GitHub 上即可。
 
 1. 打开 **插件** 页 → **实验性插件** → 右上角 **更多** → 勾选 **启用「自定义插件市场」**
 2. 切到 **发现** → **添加索引**，填入：
 
    ~~~text
-   https://raw.githubusercontent.com/SDSAEWQ/dsh-jieqi/main/market/index.json
+   https://cdn.jsdelivr.net/gh/SDSAEWQ/dsh-jieqi@main/market/index.json
    ~~~
 
+   （raw.githubusercontent.com 国内常常连不上，jsDelivr 更稳，两者内容一致。）
 3. 在列表里找到 **节气 · dsh-jieqi**，点安装
 
 安装完成后，`jieqi` skill 会随插件一起注册进会话技能目录，不需要再按方式三装一遍。
 
 注意：市场安装走 git 源，本机需要装有 git。没有 git 就用下面的手动方式。
+
+> npm 上的 `dsh-jieqi` 是别人的同名占位包。**别**在「添加插件」里只输 `dsh-jieqi`——那会装错包。用市场卡片，或者输入完整地址：
+>
+> ~~~text
+> dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
+> ~~~
+
+> 提交到公共目录的条目在 `market/awesome-entry.yml`。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 `dsh-jieqi` 就能直接装。
 
 > 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
 
