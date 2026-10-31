@@ -68,6 +68,15 @@
       },
       "versions": [
         {
+          "version": "0.9.1",
+          "publishTimestamp": 1793429988,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "commit": "1d493a7683d061766facc45914407a828bc45183"
+          }
+        },
+        {
           "version": "0.9.0",
           "publishTimestamp": 1793428223,
           "source": {
