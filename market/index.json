@@ -5,8 +5,8 @@
     "zh": "节气 · dsh-jieqi"
   },
   "description": {
-    "en": "A quiet dot under the conversation header that unfolds into the Chinese solar term, its 候, a 养生 line, the year table and the 消息卦 of the month. Drag the card itself.",
-    "zh": "对话区标题栏下沿的一颗小圆点，展开是今天的节气、三候、一句养生、全年交节时刻与月建消息卦；整张卡片都能拖着走。"
+    "en": "A quiet dot under the conversation header that unfolds into the Chinese solar term, its 候, a 养生 line, the year table and the 消息卦 of the month. Drag the card itself. The 卦 page can cast a hexagram with three coins.",
+    "zh": "对话区标题栏下沿的一颗小圆点，展开是今天的节气、三候、一句养生、全年交节时刻与月建消息卦；整张卡片都能拖着走。 卦页还能铜钱摇一卦。"
   },
   "metadata": {
     "categories": {
@@ -67,6 +67,16 @@
         "sortKeys": {}
       },
       "versions": [
+        {
+          "version": "0.9.0",
+          "publishTimestamp": 1793428223,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/SDSAEWQ/dsh-jieqi",
+            "commit": "bdbd1632d4f55e4f1f9aaa914bfed5c517d1c4fd",
+            "path": "plugin"
+          }
+        },
         {
           "version": "0.8.0",
           "publishTimestamp": 1793412552,
