@@ -30,6 +30,8 @@ window.__ModuleLoader__.load({
     const TAB_HEIGHT = 46
     /** Which face of the card was last open, restored on the next mount. */
     const PAGE_KEY = 'dsh-jieqi.page'
+    /** The last coin throw, kept per date: reopening the 卦 page shows it. */
+    const CAST_KEY = 'dsh-jieqi.cast'
     /** Card width in px; kept in sync with styles.card below. */
     const CARD_WIDTH = 218
     /** Dot diameter, quiet days and the day a term changes. */
@@ -192,6 +194,196 @@ window.__ModuleLoader__.load({
         gloss: '纯阴承载：以顺为用，先把底盘托住，再谈进取。',
       },
     }
+    /**
+     * 摇卦: three coins, six throws. 背 counts 3 and 字 counts 2, so a throw
+     * scores 6 老阴, 7 少阳, 8 少阴 or 9 老阳; 6 and 9 are the moving lines.
+     * The coins come from crypto.getRandomValues, never from Math.random.
+     */
+    const TRIGRAMS = [
+      { name: '乾', img: '天', glyph: '☰', bits: [1, 1, 1] },
+      { name: '兑', img: '泽', glyph: '☱', bits: [1, 1, 0] },
+      { name: '离', img: '火', glyph: '☲', bits: [1, 0, 1] },
+      { name: '震', img: '雷', glyph: '☳', bits: [1, 0, 0] },
+      { name: '巽', img: '风', glyph: '☴', bits: [0, 1, 1] },
+      { name: '坎', img: '水', glyph: '☵', bits: [0, 1, 0] },
+      { name: '艮', img: '山', glyph: '☶', bits: [0, 0, 1] },
+      { name: '坤', img: '地', glyph: '☷', bits: [0, 0, 0] },
+    ]
+    /** 文王卦序: rows are the upper trigram, columns the lower, in TRIGRAMS order. */
+    const KING_ORDER = [
+      [1, 10, 13, 25, 44, 6, 33, 12],
+      [43, 58, 49, 17, 28, 47, 31, 45],
+      [14, 38, 30, 21, 50, 64, 56, 35],
+      [34, 54, 55, 51, 32, 40, 62, 16],
+      [9, 61, 37, 42, 57, 59, 53, 20],
+      [5, 60, 63, 3, 48, 29, 39, 8],
+      [26, 41, 22, 27, 18, 4, 52, 23],
+      [11, 19, 36, 24, 46, 7, 15, 2],
+    ]
+    /** Index = 文王卦序; 0 is unused so a hexagram number reads as itself. */
+    const HEX_NAMES = ['',
+      '乾', '坤', '屯', '蒙', '需', '讼', '师', '比', '小畜', '履', '泰', '否', '同人', '大有', '谦', '豫',
+      '随', '蛊', '临', '观', '噬嗑', '贲', '剥', '复', '无妄', '大畜', '颐', '大过', '坎', '离', '咸', '恒',
+      '遁', '大壮', '晋', '明夷', '家人', '睽', '蹇', '解', '损', '益', '夬', '姤', '萃', '升', '困', '井',
+      '革', '鼎', '震', '艮', '渐', '归妹', '丰', '旅', '巽', '兑', '涣', '节', '中孚', '小过', '既济', '未济',
+    ]
+    /** One sentence each, so a throw is read without opening anything else. */
+    const HEX_SAY = ['',
+      '刚健进取，自强不息——势在自己这边，但别走到亢龙有悔。',
+      '以顺承事，厚德载物——先把底盘托住，再谈进取。',
+      '万事开头难——先立根基，别急着扩张。',
+      '蒙昧待启——诚心求教，别自作聪明。',
+      '时候未到——有信而待，等雨过天晴。',
+      '争讼不利——中途收手，见好就停。',
+      '出师有名——有纪律有节制，才动得。',
+      '亲比相辅——择善而从，来晚了就有凶。',
+      '小有积蓄——密云不雨，宜蓄不宜发。',
+      '履虎尾——礼数与分寸保你平安。',
+      '上下气通——顺势而为，别逆着来。',
+      '闭塞之时——俭省自守，等气机回转。',
+      '与人同心——开门结伴，比单打独斗走得远。',
+      '大有所得——盛大之时更须谦，满则招损。',
+      '谦而有终——低一头，反而处处通。',
+      '豫乐顺动——有备而乐，别耽于安逸。',
+      '随时而动——跟对人、跟对势，别硬顶。',
+      '积弊待治——该整顿就整顿，先治根。',
+      '以宽临下——多说理，少施压。',
+      '静观示范——先看清，再说服。',
+      '咬合除梗——该断的梗阻，果断咬断。',
+      '文饰有度——装点可以，别盖过实质。',
+      '阴盛剥阳——不宜远行大事，把根基垫厚。',
+      '一阳来复——气机回转，宜静养待长。',
+      '不妄为——守正自然，别耍小聪明。',
+      '大蓄待发——厚积而后动。',
+      '颐养之道——管好嘴，养好身。',
+      '栋梁将挠——非常之时行非常之举，但别硬撑。',
+      '重险——守信涉险，一步一探。',
+      '附丽光明——附正道则明，附邪僻则焚。',
+      '感应相通——以诚相感，不必强求。',
+      '恒久之道——守住节律，别三心二意。',
+      '退避守正——退不是输，是全身。',
+      '壮而守礼——力气越大越要守规矩。',
+      '进而有明——光明上进，宜见大人。',
+      '明入地中——韬光养晦，藏锋守拙。',
+      '家道正——先齐家，后治事。',
+      '睽违异趣——求同存异，小事可为。',
+      '前有险阻——反身修德，绕行比硬闯好。',
+      '险难已解——宜速不宜迟，别把绳子又系上。',
+      '损下益上——减一分负担，增一分清明。',
+      '损上益下——该投入就投入，乘势而为。',
+      '决断去疑——摆到明处说，别用蛮力。',
+      '一阴初遇——防微杜渐，小事牵大局。',
+      '聚而成群——人气聚了，要立规矩。',
+      '积小高升——一步一阶，别想一步登天。',
+      '困而不失——守志待时，话少一点。',
+      '井养不穷——把底子修好，人人来取。',
+      '革故鼎新——时机到了才改，改要取信。',
+      '鼎新养贤——稳住局面，先把人安顿好。',
+      '震动惊百里——临变不乱，事后再论。',
+      '止其所止——该停就停，停得住才走得远。',
+      '渐进有序——慢一点，反而稳。',
+      '婚嫁失序——名分不正，勿强求。',
+      '丰大满盈——日中则昃，盛时思退。',
+      '旅居在外——柔顺守分，别逞强。',
+      '顺而入——谦逊入微，反复申命。',
+      '喜悦相说——和悦可亲，但别口舌取巧。',
+      '涣散待聚——化开郁结，聚拢人心。',
+      '节而不过——有度则通，太苦则伤。',
+      '诚信中孚——以诚感人，豚鱼可动。',
+      '小有过越——小事可为，大事勿冒进。',
+      '事已成——守成防败，慎在收尾。',
+      '事未成——最后一步最难，谨慎收尾。',
+    ]
+    /** 爻位, bottom first. */
+    const HEX_POS = ['初', '二', '三', '四', '五', '上']
+    const YAO_NAMES = { 6: '老阴', 7: '少阳', 8: '少阴', 9: '老阳' }
+
+    /** One fair integer below count, drawn from the platform's entropy pool. */
+    function randomBelow(count) {
+      const pool = window.crypto
+      if (pool && pool.getRandomValues) {
+        const box = new Uint8Array(1)
+        // 256 is not a multiple of count: redraw rather than bend the odds.
+        const limit = 256 - (256 % count)
+        for (let attempt = 0; attempt < 32; attempt++) {
+          pool.getRandomValues(box)
+          if (box[0] < limit) return box[0] % count
+        }
+      }
+      return Math.floor(Math.random() * count)
+    }
+
+    /** Three coins: how many land 背 decides the line. */
+    function tossLine() {
+      let backs = 0
+      for (let coin = 0; coin < 3; coin++) backs += randomBelow(2)
+      return 6 + backs
+    }
+
+    /** '背背字', for the throw as it lands. */
+    function coinFace(value) {
+      const backs = value - 6
+      let text = ''
+      for (let coin = 0; coin < 3; coin++) text += coin < backs ? '背' : '字'
+      return text
+    }
+
+    /** lines: six 0/1, bottom first. */
+    function hexOf(lines) {
+      let lower = 0
+      let upper = 0
+      for (let index = 0; index < TRIGRAMS.length; index++) {
+        const bits = TRIGRAMS[index].bits
+        if (bits[0] === lines[0] && bits[1] === lines[1] && bits[2] === lines[2]) lower = index
+        if (bits[0] === lines[3] && bits[1] === lines[4] && bits[2] === lines[5]) upper = index
+      }
+      return { no: KING_ORDER[upper][lower], upper: TRIGRAMS[upper], lower: TRIGRAMS[lower] }
+    }
+
+    /** 地天泰, or 乾为天 when the two trigrams agree. */
+    function hexTitle(hex) {
+      return hex.upper.name === hex.lower.name
+        ? hex.upper.name + '为' + hex.upper.img
+        : hex.upper.img + hex.lower.img + HEX_NAMES[hex.no]
+    }
+
+    /** A throw of six lines: the hexagram, its moving lines, and 之卦 if any. */
+    function hexFromValues(values) {
+      const lines = values.map((value) => (value % 2 === 1 ? 1 : 0))
+      const moving = []
+      for (let index = 0; index < values.length; index++) {
+        if (values[index] === 6 || values[index] === 9) moving.push(index)
+      }
+      const flipped = lines.map((line, index) => (moving.indexOf(index) === -1 ? line : 1 - line))
+      return {
+        values: values,
+        lines: lines,
+        moving: moving,
+        ben: hexOf(lines),
+        zhi: moving.length ? hexOf(flipped) : null,
+      }
+    }
+
+    function castLines() {
+      const values = []
+      for (let index = 0; index < 6; index++) values.push(tossLine())
+      return hexFromValues(values)
+    }
+
+    function restoreDraw() {
+      try {
+        const saved = readStorage(CAST_KEY)
+        if (!saved) return null
+        const parsed = JSON.parse(saved)
+        if (!parsed || !Array.isArray(parsed.values) || parsed.values.length !== 6) return null
+        const values = parsed.values.map((value) => Number(value))
+        if (values.some((value) => !Number.isInteger(value) || value < 6 || value > 9)) return null
+        return { date: String(parsed.date || ''), values: values }
+      } catch (error) {
+        return null
+      }
+    }
+
     /**
      * The year page needs the other 23 terms too, so the client carries the
      * same Meeus low-precision Sun: [name, apparent longitude, month branch].
@@ -426,6 +618,73 @@ window.__ModuleLoader__.load({
         fontSize: '12px', lineHeight: '18px', color: 'var(--dsw-alias-label-secondary, rgba(150, 150, 160, 1))',
       },
       guaXiang: { marginTop: '6px', fontSize: '11px', lineHeight: '16px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))' },
+      castHead: {
+        display: 'flex', alignItems: 'baseline', gap: '6px',
+        marginTop: '9px', paddingTop: '8px',
+        borderTop: '1px solid var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.22))',
+      },
+      castTitle: { flex: 'none', fontSize: '11px', lineHeight: '15px', color: 'var(--dsw-alias-label-secondary, rgba(150, 150, 160, 1))' },
+      castMeta: {
+        flex: '1 1 auto', minWidth: '0', textAlign: 'right',
+        fontSize: '10px', lineHeight: '15px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      },
+      castLines: { display: 'flex', flexDirection: 'column', gap: '1px', marginTop: '4px' },
+      castLine: { display: 'flex', alignItems: 'center', gap: '6px', height: '12px' },
+      castPos: {
+        flex: 'none', width: '10px', textAlign: 'center',
+        fontSize: '9px', lineHeight: '12px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))', opacity: '0.8',
+      },
+      castBars: {
+        flex: 'none', display: 'flex', alignItems: 'center', gap: '4px', width: '54px', height: '3px',
+        transition: 'opacity 160ms ease',
+      },
+      castBar: {
+        flex: '1 1 auto', height: '3px', borderRadius: '1px',
+        background: 'var(--dsw-alias-label-secondary, rgba(242, 243, 245, 0.72))', opacity: '0.42',
+      },
+      castBarMoving: {
+        flex: '1 1 auto', height: '3px', borderRadius: '1px',
+        background: 'var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe))', opacity: '0.95',
+      },
+      castYao: {
+        flex: 'none', marginLeft: 'auto', width: '24px', textAlign: 'right', fontSize: '9px', lineHeight: '12px',
+        color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))', opacity: '0.8',
+      },
+      castMark: {
+        flex: 'none', width: '10px', marginLeft: '1px', textAlign: 'center', fontSize: '9px', lineHeight: '12px',
+        color: 'var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe))',
+      },
+      castTop: { display: 'flex', alignItems: 'baseline', gap: '5px', marginTop: '6px' },
+      castGlyph: {
+        flex: 'none', fontSize: '15px', lineHeight: '18px',
+        color: 'var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe))',
+      },
+      castName: {
+        flex: 'none', fontSize: '14px', lineHeight: '18px', fontWeight: '600',
+        color: 'var(--dsw-alias-label-primary, rgba(230, 230, 235, 1))',
+      },
+      castNo: { flex: 'none', fontSize: '10px', lineHeight: '18px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))' },
+      castTag: { marginLeft: 'auto', flex: 'none', fontSize: '10px', lineHeight: '18px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))' },
+      castForm: { marginTop: '2px', fontSize: '10px', lineHeight: '14px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))' },
+      castGloss: { marginTop: '4px', fontSize: '11px', lineHeight: '16px', color: 'var(--dsw-alias-label-secondary, rgba(150, 150, 160, 1))' },
+      castFoot: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: '7px' },
+      castBtn: {
+        flex: 'none', boxSizing: 'border-box', height: '20px', padding: '0 9px', margin: '0',
+        border: '1px solid var(--dsw-alias-border-l3, rgba(140, 140, 150, 0.4))', borderRadius: '10px',
+        background: 'none', cursor: 'pointer',
+        fontSize: '11px', lineHeight: '18px', color: 'var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe))',
+        transition: 'opacity 160ms ease',
+      },
+      castLink: {
+        flex: 'none', padding: '0', margin: '0', border: 'none', background: 'none', cursor: 'pointer',
+        fontSize: '10px', lineHeight: '20px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
+      },
+      castHint: {
+        flex: '1 1 auto', minWidth: '0', textAlign: 'right',
+        fontSize: '10px', lineHeight: '20px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      },
       track: {
         position: 'relative', marginTop: '9px', height: '2px', borderRadius: '2px',
         background: 'var(--dsw-alias-border-l2, rgba(128, 128, 128, 0.22))', overflow: 'hidden',
@@ -931,6 +1190,11 @@ window.__ModuleLoader__.load({
         const saved = readStorage(PAGE_KEY)
         return saved === 'hou' || saved === 'year' || saved === 'gua' ? saved : 'main'
       })
+      /** The throw on this date, so the 卦 page survives a reopen. */
+      const [draw, setDraw] = React.useState(() => restoreDraw())
+      /** How many of the six lines have landed; 6 means the throw is settled. */
+      const [upto, setUpto] = React.useState(draw ? 6 : 0)
+      const castTimer = React.useRef(null)
       /** 0 follows today; any other value is a year browsed in the sheet. */
       const [viewYear, setViewYear] = React.useState(0)
       /** A term picked from that sheet, to read its exact moment. */
@@ -961,6 +1225,11 @@ window.__ModuleLoader__.load({
       const [hint] = React.useState(() => readStorage(HINT_KEY) !== '1')
       const calm = React.useMemo(() => {
         try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (error) { return false }
+      }, [])
+
+      // A throw still landing must not keep ticking after the card is gone.
+      React.useEffect(() => () => {
+        if (castTimer.current) window.clearTimeout(castTimer.current)
       }, [])
 
       // One page unrolls into the next: keep the height the card had, then ride
@@ -1977,6 +2246,110 @@ window.__ModuleLoader__.load({
         h('div', { style: Object.assign({}, styles.toast, { opacity: toast ? 1 : 0 }) }, toast || ' '),
       ]
 
+      // 摇卦: the coin throw on this date, its six lines and one sentence.
+      const castHex = draw && draw.date === info.date ? hexFromValues(draw.values) : null
+      const castSettled = Boolean(castHex) && upto >= 6
+
+      /** Turn the six coins over one at a time; the card is calm under reduced motion. */
+      const roll = (event) => {
+        event.stopPropagation()
+        if (castTimer.current) { window.clearTimeout(castTimer.current); castTimer.current = null }
+        const next = castLines()
+        setDraw({ date: info.date, values: next.values })
+        writeStorage(CAST_KEY, JSON.stringify({ date: info.date, values: next.values }))
+        setUpto(0)
+        if (calm) { setUpto(6); return }
+        const step = (count) => {
+          castTimer.current = window.setTimeout(() => {
+            setUpto(count)
+            if (count < 6) step(count + 1)
+            else castTimer.current = null
+          }, 112)
+        }
+        step(1)
+      }
+
+      const castText = castHex ? [
+        info.date + ' 摇卦',
+        '第' + castHex.ben.no + '卦 ' + HEX_NAMES[castHex.ben.no],
+        hexTitle(castHex.ben) + '（上' + castHex.ben.upper.name + '下' + castHex.ben.lower.name + '）',
+        castHex.moving.length
+          ? '动爻 ' + castHex.moving.map((index) => HEX_POS[index]).join('、') + (castHex.zhi ? '，之卦 ' + HEX_NAMES[castHex.zhi.no] : '')
+          : '六爻安静',
+        HEX_NAMES[castHex.ben.no] + '：' + HEX_SAY[castHex.ben.no],
+      ].join(' ') : ''
+
+      const copyCast = (event) => {
+        event.stopPropagation()
+        if (copyText(castText)) { markCopied(); flash('已复制这一卦') }
+        else flash('复制失败')
+      }
+
+      const castNote = !castHex
+        ? '三枚铜钱 · 六掷'
+        : (upto < 6
+          ? '第 ' + (upto + 1) + ' 爻 · ' + coinFace(castHex.values[Math.min(upto, 5)])
+          : (castHex.moving.length
+            ? '动爻 ' + castHex.moving.map((index) => HEX_POS[index]).join('、')
+            : '六爻安静'))
+
+      const castBody = [
+        h('div', { style: styles.castHead },
+          h('span', { style: styles.castTitle }, '铜钱摇卦'),
+          h('span', { style: styles.castMeta }, castNote)
+        ),
+        castHex ? h('div', { style: styles.castLines },
+          [5, 4, 3, 2, 1, 0].map((index) => {
+            const value = castHex.values[index]
+            const yang = value % 2 === 1
+            const moving = castHex.moving.indexOf(index) !== -1
+            // Lines land from 初爻 upward: the first throw is the bottom one.
+            const landed = upto > index
+            const bar = moving ? styles.castBarMoving : styles.castBar
+            return h('div', { key: index, style: styles.castLine },
+              h('span', { style: styles.castPos }, HEX_POS[index]),
+              h('span', { style: Object.assign({}, styles.castBars, landed ? null : { opacity: '0.14' }) },
+                yang
+                  ? h('span', { key: 'whole', style: bar })
+                  : [h('span', { key: 'left', style: bar }), h('span', { key: 'right', style: bar })]),
+              h('span', { style: styles.castMark }, landed && moving ? (yang ? '○' : '×') : ''),
+              h('span', { style: Object.assign({}, styles.castYao, landed ? null : { opacity: '0.14' }) },
+                landed ? YAO_NAMES[value] : '·')
+            )
+          })
+        ) : null,
+        castSettled ? h('div', { role: 'status', 'aria-live': 'polite' },
+          h('div', { style: styles.castTop },
+            h('span', { style: styles.castGlyph }, String.fromCharCode(0x4dc0 + castHex.ben.no - 1)),
+            h('span', { style: styles.castName }, HEX_NAMES[castHex.ben.no]),
+            h('span', { style: styles.castNo }, '第 ' + castHex.ben.no + ' 卦'),
+            h('span', { style: styles.castTag }, castHex.moving.length ? castHex.moving.length + ' 爻动' : '静卦')
+          ),
+          h('div', { style: styles.castForm },
+            hexTitle(castHex.ben) + ' · 上' + castHex.ben.upper.name + '下' + castHex.ben.lower.name
+              + (castHex.zhi ? ' → ' + hexTitle(castHex.zhi) : '')),
+          h('div', { style: styles.castGloss }, HEX_NAMES[castHex.ben.no] + '：' + HEX_SAY[castHex.ben.no])
+        ) : null,
+        h('div', { style: styles.castFoot },
+          h('button', {
+            'data-jieqi-control': true,
+            style: styles.castBtn,
+            onClick: roll,
+            title: castHex ? '再掷一次，另起一卦' : '三枚铜钱掷六次，从初爻往上起卦',
+            'aria-label': castHex ? '再摇一卦' : '摇一卦',
+          }, castHex ? '再摇一卦' : '摇一卦'),
+          castSettled
+            ? h('button', {
+              'data-jieqi-control': true,
+              style: styles.castLink,
+              onClick: copyCast,
+              title: '复制卦名、动爻与卦意',
+              'aria-label': '复制这一卦',
+            }, '复制卦意')
+            : h('span', { style: styles.castHint }, '本地随机 · 只作参照')
+        ),
+      ]
+
       // The 卦 page: this month's 消息卦, its 卦辞 and one plain sentence.
       const guaBody = guaSay ? [
         h('div', { style: styles.head },
@@ -1999,7 +2372,8 @@ window.__ModuleLoader__.load({
         h('div', { style: styles.guaCi }, guaSay.ci),
         h('div', { style: styles.guaGloss }, guaSay.gloss),
         h('div', { style: styles.guaXiang }, '象曰：' + guaSay.xiang),
-        h('div', { style: styles.yearFootLine }, '十二消息卦 · 以月建为序 · 不作卜问'),
+        ...castBody,
+        h('div', { style: Object.assign({}, styles.yearFootLine, { marginTop: '7px' }) }, '月建消息卦 · 摇卦只作参照'),
         h('div', { style: Object.assign({}, styles.toast, { opacity: toast ? 1 : 0 }) }, toast || ' '),
       ] : fullBody
 

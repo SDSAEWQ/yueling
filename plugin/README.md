@@ -6,22 +6,6 @@ A quiet solar-term dot docked under the conversation header of the DeepSeek
 Harness Web GUI. Hover it and a small card unfolds: the term, which 候 of it
 we are in, the day count, and how far the next term is.
 
-## Install
-
-DSH → **Plugins** → **Add plugin**, and type:
-
-~~~text
-dshjieqi-card
-~~~
-
-That is this package on npm. From source instead:
-
-~~~text
-github:SDSAEWQ/dsh-jieqi#path:/plugin
-~~~
-
-Restart DSH (or press Ctrl+R) and the dot appears above the composer.
-
 ## Bundled skill
 
 The package also ships the `jieqi` skill in `assets/jieqi/` and registers it on
@@ -116,6 +100,16 @@ lives in `skill/jieqi/` at the repository root.
   the 月建 follows. Hovering says which line it is (`五阴剥阳`); clicking opens
   the 卦 page: glyph, number, 卦辞, one plain sentence and 象曰, read against
   this month rather than as a divination. `‹` or `Esc` returns.
+- Below that the 卦 page carries the coin throw: three coins six times, a back
+  counting 3 and a face 2, so 6 老阴, 7 少阳, 8 少阴 and 9 老阳 — the old coin
+  method. Randomness comes from `window.crypto.getRandomValues` with rejection
+  sampling (never `Math.random` unless the platform has no crypto), and nothing
+  leaves the machine. The six lines land bottom-up, one every 112 ms — at once
+  under reduced motion — moving lines drawn in the accent colour with ○ or ×
+  beside them; the sixth brings the primary hexagram, the changed one, its
+  trigrams and one sentence. 「复制卦意」 copies the reading, 「再摇一卦」
+  throws again, and the throw is kept in `dsh-jieqi.cast` (`{ date, values }`),
+  so the card shows the same result until the date changes.
 - When 三伏 or 数九 is running, the countdown line leads with it instead of
   only counting to the next term: `初伏 6 天 · 距大暑 3 天`, `一九 4 天 ·
   距小寒 11 天`. 初伏 is the third 庚 day after 夏至, 末伏 the first 庚 day
@@ -151,6 +145,8 @@ lives in `skill/jieqi/` at the repository root.
   `dsh-jieqi.announced` / `dsh-jieqi.notified` (term instant already handled),
   `dsh-jieqi.told` (the day's toast already shown),
   `dsh-jieqi.permission-asked`, `dsh-jieqi.accent` (auto | brand | tint key),
-  `dsh-jieqi.hinted` (`1` once the first-run line has been shown).
+  `dsh-jieqi.hinted` (`1` once the first-run line has been shown),
+  `dsh-jieqi.cast` (`{ date, values }`: the day's six throws, dropped when the
+  date no longer matches).
 - The 七十二候 table is hard-coded in `lib/client.js` (HOU), three lines per
   term; the 候 boundaries are thirds of the actual term length, not of 15 days.

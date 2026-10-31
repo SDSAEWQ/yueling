@@ -40,6 +40,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 | 🧮 **Computed locally** | Sun's apparent longitude + ΔT, works offline |
 | 🀄 **The old calendar** | Sexagenary year · month branch · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
 | 📋 **One line** | Click anywhere on the card to copy today as a single summary |
+| 🎲 **Cast a hexagram** | Three coins, six throws, six lines settle bottom-up, one sentence of meaning |
 | 🫧 **Drag anything** | The whole card moves; park it at an edge to leave a slim tab |
 | 🎨 **Eight palettes** | One of them follows the season (spring green, autumn gold, winter blue) |
 | 🔔 **Term reminder** | Opens an hour early and posts a system notification at the exact instant |
@@ -47,7 +48,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 ~~~text
 ⬤ dot ── hover ──▶ 🌤 today ──┬── tap pentad ──▶ 🍃 pentads
                               ├── tap calendar ─▶ 📅 year table
-                              └── tap hexagram ▶ ☯️ hexagram
+                              └── tap hexagram ▶ ☯️ hexagram ▶ 🎲 cast
 ~~~
 
 ---
@@ -57,7 +58,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 | 🌤 Today · term · tip · countdown | 🍃 Pentads · days left in each |
 | :---: | :---: |
 | ![today](docs/today.png) | ![pentads](docs/hou.png) |
-| 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram |
+| 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram · casting |
 | ![year](docs/year.png) | ![hexagram](docs/gua.png) |
 
 ---
@@ -72,6 +73,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 - ⏳ Days and hours until the next term, with a thin progress bar; a live countdown on the term day
 - 🥣 A one-line seasonal tip (from the bundled 节气养生速查 reference)
 - ☯️ The sovereign hexagram for the month branch, drawn with six lines
+- 🎲 The 卦 page can cast: three coins six times, six lines landing bottom-up, the primary and changed hexagram, one sentence of meaning
 
 ### 2. On the term day it shows up by itself
 
@@ -98,7 +100,16 @@ Every transition instant is computed locally from the sun's apparent longitude
 - 🔥 While 三伏 or 数九 is active the countdown line shows it first: 初伏 6 days · 3 days to 大暑
 - 🧮 初伏 = third 庚 day after 夏至; 末伏 = first 庚 day after 立秋; 数九 runs 81 days from 冬至
 
-### 5. Details
+### 5. Cast a hexagram
+
+- 🪙 Three coins, six throws: a back counts 3, a face 2 — 6 old 阴, 7 young 阳, 8 young 阴, 9 old 阳, the old coin method
+- 🎲 The randomness is window.crypto.getRandomValues with rejection sampling (no modulo bias), entirely local, no request
+- ⬇️ The six lines land one at a time from the bottom (112 ms each); moving lines are marked ○ or ×, then the primary and changed hexagram are read out
+- 🧾 One sentence per hexagram, all sixty-four: 「大过：栋梁将挠 —— 非常之时行非常之举，但别硬撑」
+- 📋 「复制卦意」 copies the date, number, trigrams, moving lines, changed hexagram and the sentence; 「再摇一卦」 throws again
+- 💾 The day's cast is remembered across page switches and restarts and expires the next day; reduced motion settles it at once
+
+### 6. Details
 
 - 🌙 Rolls over at local midnight, on page visibility change, and on window focus
 - 📱 Under 480px the card collapses into a single row
@@ -203,6 +214,8 @@ node scripts/jieqi.mjs --year
 | 🍃 Tap the pentad line | Pentads page |
 | 📅 Tap the calendar icon | Year table, ‹ › to change year |
 | ☯️ Tap the hexagram | Hexagram page |
+| 🎲 Tap 「摇一卦」 | Three coins, six throws, lines land one by one |
+| 📋 Tap 「复制卦意」 | Copies the hexagram and its sentence |
 | 🎨 Tap a palette dot | Eight palettes |
 | 📋 Click empty card space | Copies the one-line summary |
 | ⎋ Esc / ‹ | Back |
@@ -240,6 +253,7 @@ The client calls this local route only; no external requests.
 - 📏 Within about **2–6 minutes** of the Purple Mountain Observatory values; dates are reliable
 - 🕗 Fixed to UTC+8 (no DST), years 1900–2100
 - 🀄 The sexagenary year switches at 立春 and the month branch at each of the 12 节 — the calendrical convention, not the lunar month
+- 🎲 Casting uses local cryptographic randomness (crypto.getRandomValues + rejection sampling), unrelated to the old 「以钱代蓍」 sensitivity; the sentences follow each 卦's meaning and are for reference, not a judgement of fortune
 
 ---
 
@@ -261,4 +275,4 @@ Remove dsh-jieqi from package.json and cordis.patch.yml, delete the junction and
 
 MIT © 2026 SDSAEWQ
 
-<p align="center"><sub>☯️ Signals, not fortune-telling 🌗</sub></p>
+<p align="center"><sub>🌗 Instants first · casting for reference · no fortune-telling 🎲</sub></p>
