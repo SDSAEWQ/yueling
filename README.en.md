@@ -2,8 +2,9 @@
 
 A quiet 8px dot under the conversation header of the DeepSeek Harness Web GUI.
 Hover it and it unfolds into today's solar term: the 干支 year, the month branch,
-which day of the term, the exact instant it began, the current 候, the next term,
-and the 消息卦 of the month.
+which day of the term, the exact instant it began, the current 候, the next term
+counted down to the hour, a one-line 养生 note, and the 消息卦 of the month. The
+whole card drags by itself, and one click copies the term name.
 
 No network, no model call, no sidebar slot. Every instant is solved locally from
 the Sun's apparent longitude.
