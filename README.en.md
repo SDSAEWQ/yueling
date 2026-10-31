@@ -23,7 +23,7 @@ MIT · plugin 0.8.0 · DSH 0.2.x desktop · any platform with the Web GUI
 ![four card faces](docs/faces.png)
 
 - **Today** — 干支 year, month branch, date, term, day count, instant, current 候,
-  countdown to the next term, 消息卦.
+  hour-accurate countdown to the next term, a one-line 养生 hint, 消息卦.
 - **三候** — the term cut into its three 候: past, current (counting down), upcoming.
 - **Year** — all 24 terms of a year with their instants; walk 1900–2100.
 - **Hexagram** — the 消息卦 of the month: glyph, number, 卦辞, one plain sentence, 象曰.
