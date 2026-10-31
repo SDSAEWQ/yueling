@@ -41,6 +41,21 @@ window.__ModuleLoader__.load({
     const SLIDE_THRESHOLD = 3
     /** Fade length, shared by the styles and the unmount delay. */
     const FADE_MS = 240
+    /** The card swells out of its anchor, then settles; closing is quicker. */
+    const OPEN_MS = 420
+    const CLOSE_MS = 170
+    /** A card carried by hand keeps this much of itself on screen. */
+    const DRAG_MARGIN = 8
+    /** A thrown card coasts this long, this far per unit of release speed. */
+    const FLING_MS = 380
+    const FLING_GAIN = 150
+    const FLING_MAX = 170
+    /** Below this release speed the card simply stops (px per millisecond). */
+    const FLING_MIN = 0.55
+    /** The card's height glides between pages instead of jumping. */
+    const MORPH_MS = 220
+    /** A hung request must not leave the dot blank: give up and ask local math. */
+    const FETCH_MS = 6000
     /** How long the card stays open on its own on the day a term changes. */
     const ANNOUNCE_MS = 9000
     /** Below this viewport width the card drops to a single line. */
@@ -49,6 +64,8 @@ window.__ModuleLoader__.load({
     const CARD_MIN_WIDTH = 172
     /** Set once the card has greeted this date by itself, so it greets once a day. */
     const GREET_KEY = 'dsh-jieqi.greeted'
+    /** The last payload, painted before the Host answers, so no blank first frame. */
+    const CACHE_KEY = 'dsh-jieqi.cache'
     /** Hover is deliberate: a short pause opens the card, a shorter one closes it. */
     const HOVER_OPEN_MS = 120
     const HOVER_CLOSE_MS = 200
@@ -216,6 +233,8 @@ window.__ModuleLoader__.load({
     const ACCENT_KEY = 'dsh-jieqi.accent'
     /** '1' while the card is pinned open. */
     const PINNED_KEY = 'dsh-jieqi.pinned'
+    /** Set after the first mount ever, so the dot only introduces itself once. */
+    const HINT_KEY = 'dsh-jieqi.hinted'
 
     const KEYFRAMES = [
       '@keyframes dsh-jieqi-ripple {',
@@ -225,6 +244,24 @@ window.__ModuleLoader__.load({
       '@keyframes dsh-jieqi-in {',
       '  from { opacity: 0; transform: translateX(7px); }',
       '  to { opacity: 1; transform: translateX(0); }',
+      '}',
+      // A bubble pushed through a wall: it stretches out of the edge, then
+      // rounds back into a card. The anchor vars come from the card's style.
+      '@keyframes dsh-jieqi-bubble {',
+      '  0% { opacity: 0; border-radius: 20px; filter: blur(4px);',
+      '       transform: translate3d(var(--jq-bx, 0px), var(--jq-by, -5px), 0) scale(var(--jq-sx, 0.95), var(--jq-sy, 0.9)); }',
+      '  42% { opacity: 1; border-radius: 11px; filter: blur(0);',
+      '       transform: translate3d(0, 0, 0) scale(1.024, 0.988); }',
+      '  64% { border-radius: 13px; transform: translate3d(0, 0, 0) scale(0.994, 1.006); }',
+      '  84% { transform: translate3d(0, 0, 0) scale(1.004, 0.998); }',
+      '  100% { opacity: 1; border-radius: 13px; filter: blur(0); transform: none; }',
+      '}',
+      '@keyframes dsh-jieqi-bloom {',
+      '  0% { opacity: 0.34; transform: scale(0.28); }',
+      '  100% { opacity: 0; transform: scale(1.7); }',
+      '}',
+      '[data-dsh-jieqi-card][data-inflate="on"] {',
+      '  animation: dsh-jieqi-bubble ' + OPEN_MS + 'ms cubic-bezier(0.16, 0.72, 0.3, 1) both;',
       '}',
       '[data-jieqi-dot]:focus-visible {',
       '  outline: 2px solid var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe)) !important;',
@@ -283,7 +320,15 @@ window.__ModuleLoader__.load({
         flex: '1 1 auto', textAlign: 'right',
         fontSize: '11px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
       },
+      dayBadgeCopied: { color: 'var(--jieqi-accent, var(--dsw-alias-brand-primary, #4d6bfe))' },
       sub: { marginTop: '1px', fontSize: '11px', lineHeight: '15px', color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))' },
+      /** The 养生 sentence: two lines at rest, the whole thing on hover. */
+      tip: {
+        marginTop: '2px', fontSize: '10px', lineHeight: '14px',
+        color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
+        display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+        overflow: 'hidden', opacity: '0.86',
+      },
       houRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginTop: '3px' },
       hou: { fontSize: '12px', lineHeight: '16px', color: 'var(--dsw-alias-label-secondary, rgba(150, 150, 160, 1))' },
       houBtn: {
@@ -420,6 +465,12 @@ window.__ModuleLoader__.load({
         color: 'var(--dsw-alias-brand-primary, #4d6bfe)', pointerEvents: 'none',
         transition: 'opacity 160ms ease',
       },
+      /** The once-only line that says the card can be held, not just tapped. */
+      hint: {
+        marginTop: '7px', fontSize: '10px', lineHeight: '14px', letterSpacing: '0.02em',
+        color: 'var(--dsw-alias-label-tertiary, rgba(140, 140, 150, 1))',
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      },
     }
 
     function readStorage(key) {
@@ -427,6 +478,17 @@ window.__ModuleLoader__.load({
     }
     function writeStorage(key, value) {
       try { window.localStorage.setItem(key, value) } catch (error) { /* preference is lost on relaunch */ }
+    }
+
+    /** Today's payload as last painted, so the card has no blank first frame. */
+    function cachedToday() {
+      try {
+        const raw = readStorage(CACHE_KEY)
+        if (!raw) return null
+        const body = JSON.parse(raw)
+        if (!body || !body.term || body.date !== localDate()) return null
+        return body
+      } catch (error) { return null }
     }
     function clamp(value, min, max) { return Math.min(Math.max(value, min), Math.max(min, max)) }
     /** A remembered free point ({x,y}) or edge tab ({side,y}); null when never moved. */
@@ -468,7 +530,22 @@ window.__ModuleLoader__.load({
       return Number(parts[1]) + '月' + Number(parts[2]) + '日'
     }
     function clock(value) { return String(value).slice(11) }
-    function epoch(value) { return Date.parse(String(value).replace(' ', 'T') + ':00') }
+    /** Term instants are Beijing time, whatever zone this browser sits in. */
+    function epoch(value) {
+      const text = String(value)
+      const iso = text.length > 16 ? text.replace(' ', 'T') : text.replace(' ', 'T') + ':00'
+      return Date.parse(iso + '+08:00')
+    }
+    /** 8000000 -> '2 小时 13 分'; whole days read '3 天 7 小时'. */
+    function span(ms) {
+      const minutes = Math.max(0, Math.round(ms / 60000))
+      if (minutes < 1) return '不到 1 分钟'
+      if (minutes < 60) return minutes + ' 分钟'
+      const hours = Math.floor(minutes / 60)
+      const days = Math.floor(hours / 24)
+      if (days > 0) return days + ' 天 ' + (hours % 24) + ' 小时'
+      return minutes % 60 > 0 ? hours + ' 小时 ' + (minutes % 60) + ' 分' : hours + ' 小时'
+    }
 
     /** Beijing calendar day number: days since 1970-01-01, local midnight based. */
     function bjDayNumber(ms) { return Math.floor((ms + 8 * 3600000) / 86400000) }
@@ -807,11 +884,20 @@ window.__ModuleLoader__.load({
       }
     }
 
-    function notify(title, body) {
+    function notify(title, body, onOpen) {
       try {
         if (typeof Notification === 'undefined') return 'unsupported'
         if (Notification.permission === 'granted') {
-          new Notification(title, { body: body })
+          const note = new Notification(title, { body: body })
+          // Clicking the toast should land somewhere: focus the window and
+          // unfold the card on the term it just announced.
+          if (onOpen) {
+            note.onclick = () => {
+              try { window.focus() } catch (error) { /* the card still opens */ }
+              try { note.close() } catch (error) { /* older browser */ }
+              onOpen()
+            }
+          }
           return 'shown'
         }
         if (Notification.permission === 'default') return 'ask'
@@ -822,17 +908,22 @@ window.__ModuleLoader__.load({
     }
 
     function JieqiCard() {
-      const [info, setInfo] = React.useState(null)
+      /** The payload painted before the Host answers, when today's is on hand. */
+      const [info, setInfo] = React.useState(() => cachedToday())
       const [shape, setShape] = React.useState(null)
-      const [shown, setShown] = React.useState(false)
+      const [shown, setShown] = React.useState(() => Boolean(cachedToday()))
       const [hover, setHover] = React.useState(false)
       const [pinned, setPinned] = React.useState(() => readStorage(PINNED_KEY) === '1')
       const [auto, setAuto] = React.useState(false)
       const [suppressed, setSuppressed] = React.useState(false)
       const [sliding, setSliding] = React.useState(false)
+      /** While a card is carried by hand: its viewport rect, not the dot point. */
+      const [cardDrag, setCardDrag] = React.useState(null)
       /** True while a drag is close enough to the header to land back on it. */
       const [snapping, setSnapping] = React.useState(false)
       const [toast, setToast] = React.useState('')
+      /** A copy landed: the badge beside the term says so, where the eye is. */
+      const [copied, setCopied] = React.useState(false)
       const [accent, setAccent] = React.useState(() => readStorage(ACCENT_KEY) || 'auto')
       const [picking, setPicking] = React.useState(false)
       /** 'main' | 'hou' | 'year' | 'gua' — the card's four faces. */
@@ -854,6 +945,68 @@ window.__ModuleLoader__.load({
       const loadedDate = React.useRef('')
       /** False after the first payload, so a rollover can start at the front page. */
       const firstLoad = React.useRef(true)
+      /** The card element, measured when a page swap changes its height. */
+      const cardNode = React.useRef(null)
+      /** The page swap in flight: the height it came from and the one it grows into. */
+      const [morph, setMorph] = React.useState(null)
+      const lastH = React.useRef(0)
+      const morphPage = React.useRef(page)
+      /** Pending timer for a card still coasting after a throw. */
+      const fling = React.useRef(null)
+      /** The two nodes a carry paints directly, and the offset it last wrote. */
+      const panelNode = React.useRef(null)
+      const dotNode = React.useRef(null)
+      const live = React.useRef({ x: 0, y: 0 })
+      /** True only on the visit that meets the dot for the first time. */
+      const [hint] = React.useState(() => readStorage(HINT_KEY) !== '1')
+      const calm = React.useMemo(() => {
+        try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (error) { return false }
+      }, [])
+
+      // One page unrolls into the next: keep the height the card had, then ride
+      // to the height its new face needs instead of swapping under the cursor.
+      React.useLayoutEffect(() => {
+        const node = cardNode.current
+        if (!node) return
+        // A hidden card measures zero; remembering that would lose the height
+        // the next page has to ride from.
+        if (!open) return
+        if (morph) { morphPage.current = page; return }
+        const height = node.offsetHeight
+        if (page !== morphPage.current) {
+          morphPage.current = page
+          if (lastH.current > 0 && Math.abs(lastH.current - height) > 3 && !calm) {
+            setMorph({ from: lastH.current, to: height, phase: 'from' })
+            return
+          }
+        }
+        lastH.current = height
+      })
+
+      React.useLayoutEffect(() => {
+        if (!morph || morph.phase !== 'from') return undefined
+        // Two frames, so the old height is painted before the ride begins.
+        const id = window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            setMorph((current) => (current && current.phase === 'from'
+              ? Object.assign({}, current, { phase: 'to' })
+              : current))
+          })
+        })
+        return () => window.cancelAnimationFrame(id)
+      }, [morph])
+
+      React.useEffect(() => {
+        if (!morph || morph.phase !== 'to') return undefined
+        const id = window.setTimeout(() => setMorph(null), MORPH_MS + 40)
+        return () => window.clearTimeout(id)
+      }, [morph])
+
+      React.useEffect(() => {
+        if (!hint) return undefined
+        writeStorage(HINT_KEY, '1')
+        return undefined
+      }, [hint])
 
       const dockX = (x) => clamp(x, 12, window.innerWidth - 12)
       const freePoint = (x, y) => ({ x: dockX(x), y: clamp(y, 12, window.innerHeight - 12) })
@@ -879,20 +1032,31 @@ window.__ModuleLoader__.load({
         timers.current.push(window.setTimeout(() => setToast(''), 1800))
       }
 
+      /** Copy feedback sits under the title; the footer toast is too far away. */
+      const markCopied = () => {
+        if (timers.current.length > 20) timers.current = []
+        setCopied(true)
+        timers.current.push(window.setTimeout(() => setCopied(false), 1300))
+      }
+
       /** Whether the card is showing right now; shared by the render and Alt+J. */
-      const open = pinned || auto || (hover && !suppressed)
+      // A card being carried stays open even when the pointer has left the dot.
+      const open = pinned || auto || (hover && !suppressed) || !!cardDrag
 
       /** Unfold when this window has focus; otherwise let the system say it. */
       const tellTerm = (headline, detail) => {
         let focused = false
         try { focused = typeof document.hasFocus === 'function' && document.hasFocus() } catch (error) { focused = false }
+        const unfold = () => {
+          setPage('main')
+          setAuto(true)
+          timers.current.push(window.setTimeout(() => setAuto(false), ANNOUNCE_MS))
+        }
         if (!focused) {
-          notify(headline, detail)
+          notify(headline, detail, unfold)
           return
         }
-        setPage('main')
-        setAuto(true)
-        timers.current.push(window.setTimeout(() => setAuto(false), ANNOUNCE_MS))
+        unfold()
       }
 
       // A pointer merely crossing the dot should not pop the card open: a short
@@ -941,6 +1105,7 @@ window.__ModuleLoader__.load({
           const box = column()
           loadedDate.current = body.date
           setInfo(body)
+          try { writeStorage(CACHE_KEY, JSON.stringify(body)) } catch (error) { /* cache is optional */ }
           // A rollover starts at the front page; a fresh mount keeps the last face.
           if (!firstLoad.current) setPage('main')
           firstLoad.current = false
@@ -1038,24 +1203,39 @@ window.__ModuleLoader__.load({
         }
 
         const load = (attempt) => {
-          fetch(API, { headers: { accept: 'application/json' } })
+          let stop = null
+          try { stop = new AbortController() } catch (error) { stop = null }
+          let guard = 0
+          if (stop) {
+            guard = window.setTimeout(() => {
+              try { stop.abort() } catch (error) { /* already gone */ }
+            }, FETCH_MS)
+          }
+          const settle = () => {
+            if (guard) { window.clearTimeout(guard); guard = 0 }
+          }
+          fetch(API, Object.assign({ headers: { accept: 'application/json' } }, stop ? { signal: stop.signal } : null))
             .then((response) => (response.ok ? response.json() : Promise.reject(new Error('http ' + response.status))))
             .then((body) => {
+              settle()
               if (!alive) return
               if (!body || body.ok !== true) throw new Error('bad payload')
               accept(body)
             })
             .catch(() => {
+              settle()
               if (!alive) return
-              if (attempt < 1) {
-                // One silent retry, then the client's own astronomy answers.
-                mine.push(window.setTimeout(() => { if (alive) load(attempt + 1) }, 1200))
+              if (attempt < 2) {
+                // Two silent retries with a widening gap, then local astronomy.
+                mine.push(window.setTimeout(() => { if (alive) load(attempt + 1) }, attempt === 0 ? 900 : 3200))
                 return
               }
               try {
                 const local = localToday(localDate())
-                if (local) accept(local)
+                if (local) { accept(local); return }
               } catch (error) { /* the dot keeps its last face */ }
+              // Nothing local either: look again in a minute rather than stay dark.
+              mine.push(window.setTimeout(() => { if (alive) load(2) }, 60 * 1000))
             })
         }
         load(0)
@@ -1114,11 +1294,23 @@ window.__ModuleLoader__.load({
       // Alt+J opens and closes the card without hunting for the dot.
       React.useEffect(() => {
         const onKey = (event) => {
-          if (event.key === 'Escape' && page !== 'main') {
-            event.preventDefault()
-            setPage('main')
-            setYearPick('')
-            return
+          if (event.key === 'Escape') {
+            if (page !== 'main') {
+              event.preventDefault()
+              setPage('main')
+              setYearPick('')
+              return
+            }
+            // On the front page Esc means "put it away", not "nothing happens".
+            if (pinned || auto || (hover && !suppressed)) {
+              event.preventDefault()
+              writeStorage(PINNED_KEY, '')
+              setPinned(false)
+              setAuto(false)
+              setHover(false)
+              setSuppressed(true)
+              return
+            }
           }
           if (!event.altKey || event.repeat || event.ctrlKey || event.metaKey) return
           if (String(event.key || '').toLowerCase() !== 'j') return
@@ -1140,12 +1332,12 @@ window.__ModuleLoader__.load({
         return () => window.removeEventListener('keydown', onKey)
       }, [pinned, auto, hover, suppressed, page])
 
-      // An open detail page counts down in place; one re-render a minute is enough.
+      // An open card counts down in place; one re-render a minute is enough.
       React.useEffect(() => {
-        if (page !== 'hou') return undefined
+        if (!open) return undefined
         const timer = window.setInterval(() => setDrip((value) => (value + 1) % 600), 60000)
         return () => window.clearInterval(timer)
-      }, [page])
+      }, [open, page])
 
       // Follow the column while the window resizes, keeping the dot on screen.
       React.useEffect(() => {
@@ -1223,7 +1415,11 @@ window.__ModuleLoader__.load({
 
       // 初伏 6 天 · 距立冬 8 天: 三伏 and 数九 speak only while they run.
       const mark = fu ? fu.phase + ' ' + fu.day + ' 天' : (jiu ? jiu.name + ' ' + jiu.day + ' 天' : '')
-      const countdown = info.next ? '距' + info.next.name + ' ' + info.next.days + ' 天' : ''
+      // '距立冬 3 天 7 小时'; the exact minute rides in the tooltip.
+      const nextAt = info.next ? epoch(info.next.at) : 0
+      const countdown = info.next
+        ? '距' + info.next.name + ' ' + (nextAt > Date.now() ? span(nextAt - Date.now()) : info.next.days + ' 天')
+        : ''
       const metaLine = [mark, countdown].filter(Boolean).join(' · ')
 
       // 十二消息卦 on the card: 阳 lines solid, 阴 lines split, top line first.
@@ -1270,7 +1466,7 @@ window.__ModuleLoader__.load({
         info.term,
         hou,
         '第' + info.dayInTerm + '天',
-        info.next ? '距' + info.next.name + info.next.days + '天' : '',
+        countdown,
         '（' + info.termAt + ' 交节）',
       ].filter(Boolean).join(' ')
 
@@ -1306,7 +1502,16 @@ window.__ModuleLoader__.load({
         if (event.button !== 0) return
         const target = event.target
         if (target && target.closest && target.closest('[data-jieqi-control]')) return
+        // Pressing a card that is still coasting catches it where it is.
+        if (fling.current) { catchCard(); return }
         const mode = shape.mode || 'docked'
+        // Pressing the card carries the whole window; pressing the dot carries
+        // the dot. Either grab ends on the same free point.
+        const node = target && target.closest ? target.closest('[data-dsh-jieqi-card]') : null
+        const rect = node && node.getBoundingClientRect ? node.getBoundingClientRect() : null
+        const card = rect && rect.width > 0 && rect.height > 0
+          ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height }
+          : null
         slide.current = {
           startX: event.clientX,
           startY: event.clientY,
@@ -1314,6 +1519,15 @@ window.__ModuleLoader__.load({
           originY: mode === 'docked' ? shape.top + size / 2 : shape.y,
           mode: mode,
           moved: false,
+          card: card,
+          target: target,
+          gripX: card ? event.clientX - card.left : 0,
+          gripY: card ? event.clientY - card.top : 0,
+          left: card ? card.left : 0,
+          top: card ? card.top : 0,
+          restX: card ? card.left : 0,
+          restY: card ? card.top : 0,
+          track: [{ at: Date.now(), x: card ? card.left : 0, y: card ? card.top : 0 }],
         }
         try { event.currentTarget.setPointerCapture(event.pointerId) } catch (error) { /* optional */ }
       }
@@ -1326,6 +1540,33 @@ window.__ModuleLoader__.load({
         if (!state.moved && Math.sqrt(dx * dx + dy * dy) < SLIDE_THRESHOLD) return
         state.moved = true
         setSliding(true)
+        // A card taken by hand follows the pointer exactly: it never snaps to
+        // the rail or folds into a tab, so it cannot jump out from under it.
+        if (state.card) {
+          const maxLeft = Math.max(DRAG_MARGIN, window.innerWidth - DRAG_MARGIN - state.card.width)
+          const maxTop = Math.max(26, window.innerHeight - 26 - state.card.height)
+          state.left = clamp(event.clientX - state.gripX, DRAG_MARGIN, maxLeft)
+          state.top = clamp(event.clientY - state.gripY, 26, maxTop)
+          // The last few samples give the release its speed: a card let go mid
+          // swing should coast, not stop dead under the finger.
+          state.track.push({ at: Date.now(), x: state.left, y: state.top })
+          while (state.track.length > 6) state.track.shift()
+          setSnapping(false)
+          if (!state.carrying) {
+            // Only the fact of the carry becomes state; the motion is painted.
+            state.carrying = true
+            setCardDrag({
+              left: state.restX,
+              top: state.restY,
+              baseX: state.restX,
+              baseY: state.restY,
+              width: state.card.width,
+              height: state.card.height,
+            })
+          }
+          paintCard(state.left - state.restX, state.top - state.restY)
+          return
+        }
         const x = dockX(state.originX + dx)
         const y = clamp(state.originY + dy, TAB_HEIGHT / 2, window.innerHeight - TAB_HEIGHT / 2)
         // A drag that stays near the header keeps the dot on its rail, so the
@@ -1345,6 +1586,51 @@ window.__ModuleLoader__.load({
         setShape((current) => (current ? Object.assign({}, current, { mode: 'free', x: x, y: y }) : current))
       }
 
+      /** Park the dot against the edge the card now presents — above it, or
+       *  below when the card sits low enough to open upward — so the two agree
+       *  again and a later hover reopens the card where it was left. */
+      /** A carry paints the transform itself, so no React render runs per
+       *  pointer event and the card stays glued to the finger at any rate. */
+      const paintCard = (x, y) => {
+        live.current = { x: x, y: y }
+        const shift = 'translate3d(' + x + 'px, ' + y + 'px, 0)'
+        if (panelNode.current) {
+          panelNode.current.style.transform = (openUp ? 'translateY(-100%) ' : '') + shift
+        }
+        if (dotNode.current) dotNode.current.style.transform = shift + ' scale(0.72)'
+      }
+
+      const commitCard = (left, top, card) => {
+        if (fling.current) { window.clearTimeout(fling.current); fling.current = null }
+        live.current = { x: 0, y: 0 }
+        const half = 9 + size / 2
+        const up = top + card.height / 2 > window.innerHeight * 0.62
+        const point = freePoint(left + card.width / 2, up ? top + card.height + half : top - half)
+        setCardDrag(null)
+        setShape((current) => (current ? Object.assign({}, current, { mode: 'free', x: point.x, y: point.y }) : current))
+        writeStorage(MODE_KEY, 'free')
+        writeStorage(POS_KEY, JSON.stringify({ x: Math.round(point.x), y: Math.round(point.y) }))
+      }
+
+      /** Catches a coasting card where it currently is and parks it there. */
+      const catchCard = () => {
+        if (!cardDrag) return
+        commitCard(cardDrag.left, cardDrag.top, { width: cardDrag.width, height: cardDrag.height })
+      }
+
+      /** Release speed over the last ~110ms, in px per millisecond. */
+      const velocityOf = (state, axis) => {
+        const track = state.track || []
+        if (track.length < 2) return 0
+        const last = track[track.length - 1]
+        let first = track[0]
+        for (let i = track.length - 2; i >= 0; i -= 1) {
+          if (last.at - track[i].at > 110) break
+          first = track[i]
+        }
+        return (last[axis] - first[axis]) / Math.max(16, last.at - first.at)
+      }
+
       const endSlide = (event) => {
         const state = slide.current
         slide.current = null
@@ -1352,25 +1638,44 @@ window.__ModuleLoader__.load({
         setSnapping(false)
         try { event.currentTarget.releasePointerCapture(event.pointerId) } catch (error) { /* released */ }
         if (!state) return
-        if (state.moved) {
-          if (shape.mode === 'edge') {
-            writeStorage(MODE_KEY, 'edge')
-            writeStorage(POS_KEY, JSON.stringify({ side: shape.side, y: Math.round(shape.y) }))
-            if (state.mode !== 'edge') flash(shape.side === 'left' ? '已收到左边' : '已收到右边')
-          } else if (shape.mode === 'free') {
-            writeStorage(MODE_KEY, 'free')
-            writeStorage(POS_KEY, JSON.stringify({ x: Math.round(shape.x), y: Math.round(shape.y) }))
-          } else {
-            writeStorage(MODE_KEY, '')
-            writeStorage(POS_KEY, '')
-            writeStorage(DOCK_KEY, String(Math.round(shape.dock)))
-            if (state.mode !== 'docked') flash('已吸附到对话框顶边')
+        if (state.moved && state.card) {
+          const vx = velocityOf(state, 'x')
+          const vy = velocityOf(state, 'y')
+          if (!calm && (Math.abs(vx) > FLING_MIN || Math.abs(vy) > FLING_MIN)) {
+            // A thrown card coasts: the browser eases the last stretch on the
+            // compositor and the dot rides along on the same curve.
+            const stride = (v) => clamp(v * FLING_GAIN, -FLING_MAX, FLING_MAX)
+            const left = clamp(state.left + stride(vx), DRAG_MARGIN, Math.max(DRAG_MARGIN, window.innerWidth - DRAG_MARGIN - state.card.width))
+            const top = clamp(state.top + stride(vy), 26, Math.max(26, window.innerHeight - 26 - state.card.height))
+            live.current = { x: left - state.restX, y: top - state.restY }
+            setCardDrag({
+              left: left,
+              top: top,
+              baseX: state.restX,
+              baseY: state.restY,
+              width: state.card.width,
+              height: state.card.height,
+              fling: true,
+            })
+            window.clearTimeout(fling.current)
+            fling.current = window.setTimeout(() => {
+              fling.current = null
+              commitCard(left, top, state.card)
+            }, FLING_MS + 30)
+            return
           }
+          commitCard(state.left, state.top, state.card)
           return
         }
-        const target = event.target
-        if (target && target.closest && target.closest('[data-dsh-jieqi-card]')) {
-          if (copyText(summary)) flash('已复制')
+        if (state.moved) {
+          // The dot already rests where the pointer left it.
+          return
+        }
+        // A press that never became a drag is a click. Anywhere on the card it
+        // copies today's summary: a drag never reaches this line because the
+        // pointer has already moved past SLIDE_THRESHOLD. The dot keeps its job.
+        if (state.card) {
+          if (copyText(summary)) markCopied()
           return
         }
         togglePin()
@@ -1417,6 +1722,17 @@ window.__ModuleLoader__.load({
       const originX = edge ? (shape.side === 'left' ? 0 : cardWidth) : clamp(dotX - left, 20, cardWidth - 20)
       // Near the floor the card opens upward rather than off screen.
       const openUp = !docked && dotY > window.innerHeight * 0.62
+      // Every face inflates from one point: the wall for an edge tab, under the
+      // header for a docked dot, the card itself when it rests free.
+      const wall = edge ? (shape.side === 'left' ? -1 : 1) : 0
+      const bubble = {
+        bx: wall ? (wall * 18) + 'px' : '0px',
+        by: wall ? '0px' : (openUp ? '6px' : '-4px'),
+        sx: wall ? 0.46 : 0.95,
+        sy: wall ? 0.94 : 0.9,
+        ox: wall ? (wall < 0 ? '-8px' : 'calc(100% + 8px)') : (originX + 'px'),
+        oy: openUp ? 'calc(100% - 6px)' : '6px',
+      }
       const dotWidth = edge ? TAB_WIDTH : size
       const dotHeight = edge ? TAB_HEIGHT : size
       const dotRadius = edge ? (shape.side === 'left' ? '0 10px 10px 0' : '10px 0 0 10px') : '50%'
@@ -1426,9 +1742,13 @@ window.__ModuleLoader__.load({
       const railWidth = Math.max(40, rail.right - rail.left - 16)
 
       const elapsed = Math.max(0, info.dayInTerm - 1)
-      const span = elapsed + (info.next ? info.next.days : 0)
-      const progress = span > 0 ? Math.round((elapsed / span) * 100) : 0
-      const since = info.isTermDay ? '今日 ' + clock(info.termAt) + ' 交节' : stamp(info.termAt) + ' 交节'
+      const total = elapsed + (info.next ? info.next.days : 0)
+      const progress = total > 0 ? Math.round((elapsed / total) * 100) : 0
+      // On the term day the line counts down to the minute, then says when it was.
+      const untilTerm = epoch(info.termAt) - Date.now()
+      const since = info.isTermDay && untilTerm > 0
+        ? '距' + info.term + ' 交节 ' + span(untilTerm)
+        : info.isTermDay ? '今日 ' + clock(info.termAt) + ' 交节' : stamp(info.termAt) + ' 交节'
       const caption = info.ganzhi.year + '年 '
         + (info.ganzhi.monthBranch ? info.ganzhi.monthBranch + '月 · ' : '')
         + monthDay(info.date)
@@ -1452,8 +1772,12 @@ window.__ModuleLoader__.load({
       // Narrow: one line. 霜降 第 8 天 ×, with the countdown as the progress line.
       const narrowBody = [
         h('div', { style: styles.narrowRow },
-          h('span', { style: styles.narrowTerm }, info.term),
-          h('span', { style: styles.narrowDay }, toast || ('第 ' + info.dayInTerm + ' 天')),
+          h('span', {
+            style: styles.narrowTerm,
+            'data-dsh-jieqi-copy': true,
+            title: '点一下复制今天的摘要',
+          }, info.term),
+          h('span', { style: styles.narrowDay }, toast || (copied ? '已复制' : ('第 ' + info.dayInTerm + ' 天'))),
           closeButton
         ),
         progressBar(true),
@@ -1484,8 +1808,16 @@ window.__ModuleLoader__.load({
           closeButton
         ),
         h('div', { style: styles.titleRow },
-          h('span', { style: styles.term }, info.term),
-          h('span', { style: styles.dayBadge }, '第 ' + info.dayInTerm + ' 天'),
+          h('span', {
+            style: styles.term,
+            'data-dsh-jieqi-copy': true,
+            title: '点一下复制今天的摘要',
+          }, info.term),
+          h('span', {
+            style: copied ? Object.assign({}, styles.dayBadge, styles.dayBadgeCopied) : styles.dayBadge,
+            role: 'status',
+            'aria-live': 'polite',
+          }, copied ? '已复制' : '第 ' + info.dayInTerm + ' 天'),
           h('button', {
             'data-jieqi-control': true,
             style: Object.assign({}, styles.iconBtn, {
@@ -1501,6 +1833,7 @@ window.__ModuleLoader__.load({
           }, h('path', { d: 'M16 12V4h1V2H7v2h1v8l-2 2v2h5v6h1v-6h5v-2l-2-2z', fill: 'currentColor' }))),
         ),
         h('div', { style: styles.sub }, since),
+        info.tip ? h('div', { style: styles.tip, title: info.tip }, info.tip) : null,
         picking
           ? h('div', { style: styles.swatches }, swatches.map((item) => h('button', {
             key: item.key,
@@ -1534,11 +1867,19 @@ window.__ModuleLoader__.load({
             }, '问一问')
           ),
         h('div', { style: styles.metaRow },
-          h('span', { style: styles.metaText }, metaLine),
+          h('span', {
+            style: styles.metaText,
+            title: info.next ? info.next.name + ' ' + info.next.at : null,
+          }, metaLine),
           guaChip
         ),
         progressBar(false),
-        h('div', { style: Object.assign({}, styles.toast, { opacity: toast ? 1 : 0 }) }, toast || ' '),
+        hint ? h('div', { style: styles.hint }, '拖我走 · 点卡片复制 · Esc 收起') : null,
+        h('div', {
+          role: 'status',
+          'aria-live': 'polite',
+          style: Object.assign({}, styles.toast, { opacity: toast ? 1 : 0 }),
+        }, toast || ' '),
       ]
 
       const houBody = detail ? [
@@ -1695,10 +2036,13 @@ window.__ModuleLoader__.load({
           },
         }) : null,
         h('div', {
+          ref: dotNode,
           role: 'button',
           tabIndex: 0,
           'data-jieqi-dot': 'true',
           'aria-label': '节气：' + info.term + '，第 ' + info.dayInTerm + ' 天',
+          'aria-haspopup': 'dialog',
+          'aria-expanded': open ? 'true' : 'false',
           onKeyDown: (event) => {
             if (event.key !== 'Enter' && event.key !== ' ') return
             event.preventDefault()
@@ -1716,7 +2060,8 @@ window.__ModuleLoader__.load({
           title: info.term + ' · ' + hou
             + (open ? '' : '（点一下展开）')
             + (pinned ? '\n单击取消置顶' : '\n单击置顶')
-            + '\n拖到任意位置会停住 · 靠近标题栏吸附 · 拖到边缘收成小标签'
+            + '\n拖住卡片本身也能移动整个窗口'
+            + '\n拖圆点到任意位置会停住 · 靠近标题栏吸附 · 拖到边缘收成小标签'
             + '\n双击或右键回到中间 · Alt+J 开关',
           style: Object.assign({}, styles.dot, {
             width: dotWidth + 'px',
@@ -1724,9 +2069,18 @@ window.__ModuleLoader__.load({
             borderRadius: dotRadius,
             cursor: sliding ? 'grabbing' : 'pointer',
             touchAction: 'none',
-            opacity: open ? '1' : edge ? '0.72' : quiet ? '0.3' : '0.85',
-            animation: open || quiet || edge ? 'none' : 'dsh-jieqi-ripple 2.4s ease-in-out 3',
-            transition: 'opacity ' + FADE_MS + 'ms ease, width ' + FADE_MS + 'ms ease, height ' + FADE_MS + 'ms ease',
+            opacity: cardDrag ? '0.55' : open ? '1' : edge ? '0.72' : hint ? '0.95' : quiet ? '0.3' : '0.85',
+            transform: cardDrag
+              ? 'translate3d(' + (cardDrag.fling ? cardDrag.left - cardDrag.baseX : live.current.x) + 'px, '
+                + (cardDrag.fling ? cardDrag.top - cardDrag.baseY : live.current.y) + 'px, 0) scale(0.72)'
+              : 'none',
+            pointerEvents: cardDrag ? 'none' : 'auto',
+            animation: open || edge || (quiet && !hint) ? 'none' : 'dsh-jieqi-ripple 2.4s ease-in-out 3',
+            transition: cardDrag
+              ? (cardDrag.fling
+                ? 'transform ' + FLING_MS + 'ms cubic-bezier(0.16, 0.84, 0.28, 1), opacity 160ms ease'
+                : 'none')
+              : 'opacity ' + FADE_MS + 'ms ease, transform ' + FADE_MS + 'ms cubic-bezier(0.22, 0.8, 0.24, 1), width ' + FADE_MS + 'ms ease, height ' + FADE_MS + 'ms ease',
           }, edge ? {
             position: 'relative',
             background: 'var(--dsw-alias-bg-layer-2, rgba(32, 32, 36, 0.94))',
@@ -1755,6 +2109,8 @@ window.__ModuleLoader__.load({
             }))) : null
         ),
         h('div', {
+          ref: panelNode,
+          'aria-hidden': open ? 'false' : 'true',
           style: Object.assign({}, styles.panel, {
             width: cardWidth + 'px',
             left: (left - wrapperLeft) + 'px',
@@ -1763,28 +2119,89 @@ window.__ModuleLoader__.load({
             paddingBottom: openUp ? '9px' : '0px',
             transform: openUp ? 'translateY(-100%)' : 'none',
             pointerEvents: open ? 'auto' : 'none',
-          }),
+          }, cardDrag ? {
+            // Carried by hand the panel rides a compositor transform: its layout
+            // box never moves, so the pointer never triggers a reflow.
+            transform: (openUp ? 'translateY(-100%) ' : '')
+              + (cardDrag.fling
+                ? 'translate3d(' + (cardDrag.left - cardDrag.baseX) + 'px, ' + (cardDrag.top - cardDrag.baseY) + 'px, 0)'
+                : 'translate3d(' + live.current.x + 'px, ' + live.current.y + 'px, 0)'),
+            transition: cardDrag.fling ? 'transform ' + FLING_MS + 'ms cubic-bezier(0.16, 0.84, 0.28, 1)' : 'none',
+            willChange: 'transform',
+          } : null),
         },
           h('div', {
+            ref: cardNode,
             'data-dsh-jieqi-card': true,
+            'data-inflate': open ? 'on' : 'off',
+            role: 'dialog',
+            'aria-label': info.term + '节气',
+            'aria-hidden': open ? 'false' : 'true',
+            title: '拖动可移动整个窗口 · 点卡片复制摘要 · Esc 收起',
             style: Object.assign({}, styles.card, {
               width: cardWidth + 'px',
               padding: compact ? '8px 11px 9px' : styles.card.padding,
               opacity: open ? 1 : 0,
+              // Hidden, not merely transparent: a closed card must stop
+              // collecting Tab stops nobody can see.
+              visibility: open ? 'visible' : 'hidden',
               pointerEvents: open ? 'auto' : 'none',
-              transform: open ? 'translateY(0) scale(1)' : (openUp ? 'translateY(4px) scale(0.96)' : 'translateY(-4px) scale(0.96)'),
-              transformOrigin: originX + 'px ' + (openUp ? 'bottom' : 'top'),
-              transition: 'opacity ' + FADE_MS + 'ms ease, transform ' + FADE_MS + 'ms cubic-bezier(0.22, 0.8, 0.24, 1)',
-              cursor: sliding ? 'grabbing' : 'pointer',
-            }),
+              transform: open ? 'none' : 'translate3d(' + bubble.bx + ', ' + bubble.by + ', 0) scale(' + bubble.sx + ', ' + bubble.sy + ')',
+              transformOrigin: bubble.ox + ' ' + bubble.oy,
+              transition: open
+                ? 'none'
+                : 'opacity ' + CLOSE_MS + 'ms ease, transform ' + CLOSE_MS + 'ms cubic-bezier(0.36, 0, 0.86, 0.42), visibility 0s linear ' + CLOSE_MS + 'ms',
+              cursor: sliding ? 'grabbing' : 'grab',
+              // A touch that starts on the card is a drag, never a scroll.
+              touchAction: 'none',
+              '--jq-bx': bubble.bx,
+              '--jq-by': bubble.by,
+              '--jq-sx': String(bubble.sx),
+              '--jq-sy': String(bubble.sy),
+            }, morph ? {
+              // The box holds the old height for one frame, then rides to the
+              // new one while the incoming face fades in.
+              height: (morph.phase === 'to' ? morph.to : morph.from) + 'px',
+              transition: morph.phase === 'to'
+                ? 'height ' + MORPH_MS + 'ms cubic-bezier(0.2, 0.7, 0.25, 1)'
+                : 'none',
+            } : null),
           },
+            // A drawer handle: the one affordance that says the whole thing is
+            // held, without a tooltip anybody has to hover for.
+            compact ? null : h('span', {
+              'aria-hidden': true,
+              style: {
+                display: 'block',
+                width: '26px',
+                height: '3px',
+                margin: '0 auto 7px',
+                borderRadius: '2px',
+                background: 'currentColor',
+                opacity: '0.16',
+              },
+            }, null),
             info.isTermDay ? h('div', { style: styles.accent }) : null,
             h('div', {
               key: compact ? 'narrow' : page,
               style: { animation: 'dsh-jieqi-in ' + FADE_MS + 'ms ease' },
             }, compact ? narrowBody : (page === 'year' ? yearBody : page === 'gua' ? guaBody : page === 'hou' && detail ? houBody : fullBody))
           )
-        )
+        ),
+        edge && open ? h('div', {
+          'aria-hidden': true,
+          style: {
+            position: 'absolute',
+            left: (TAB_WIDTH / 2 - 26) + 'px',
+            top: (TAB_HEIGHT / 2 - 26) + 'px',
+            width: '52px',
+            height: '52px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, var(--jieqi-ripple, rgba(88, 116, 255, 0.34)) 0%, transparent 68%)',
+            animation: 'dsh-jieqi-bloom 620ms ease-out both',
+            pointerEvents: 'none',
+          },
+        }) : null
       )
     }
     function apply(ctx) {

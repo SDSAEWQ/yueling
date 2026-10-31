@@ -13,7 +13,7 @@ the Sun's apparent longitude.
 > The cards are the real component rendered standalone in a browser (the same
 > client.js); the chrome around them is illustrative.
 
-MIT · plugin 0.3.0 · DSH 0.2.x desktop · any platform with the Web GUI
+MIT · plugin 0.8.0 · DSH 0.2.x desktop · any platform with the Web GUI
 
 ---
 
@@ -33,6 +33,10 @@ MIT · plugin 0.3.0 · DSH 0.2.x desktop · any platform with the Web GUI
   or push it to a side edge where it becomes a half-hidden tab.
 - Hover to unfold; click (or Enter / Space) to pin open; **Alt+J** toggles from
   anywhere; double-click or right-click returns it to the middle.
+- Drag the card body too: the whole window follows, glides on release, then snaps.
+- A one-line 养生 hint for the current term comes from the bundled 速查 table; the
+  countdown speaks hours on the term day; the notification opens the card on click;
+  the first paint reuses the last result, so a cold start never flashes empty.
 - On a term day it unfolds itself one hour before the instant, shows a brand bar,
   and fires one system notification at the exact instant. Permission is asked on
   the first click, never on page load.

@@ -9,6 +9,7 @@
  * No state, no writes: the routes only answer what day it is.
  */
 
+import { readFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
@@ -20,6 +21,8 @@ export const inject = ['webServer', 'skills']
 const SKILL_DIR = fileURLToPath(new URL('../assets/jieqi/', import.meta.url))
 const SKILL_FILE = new URL('../assets/jieqi/SKILL.md', import.meta.url)
 const SKILL_SCRIPT = join(SKILL_DIR, 'scripts', 'jieqi.mjs')
+/** The 24 养生 sentences the card shows under the term it is already reading. */
+const TIP_FILE = fileURLToPath(new URL('../assets/jieqi/references/节气养生速查.md', import.meta.url))
 const SKILL_DESCRIPTION = '二十四节气与干支历速查，按天文黄经精确计算（不凭记忆）。当用户提到节气、今天什么节气、现在是什么节气、某个节气名（立春/霜降/冬至等）、距下一个节气还有几天、交节时刻、节气月建、流年干支、节气养生时使用。触发词：节气、二十四节气、今天什么节气、交节、月建、流年干支、霜降、立冬、冬至、春分。'
 
 /** Skill candidate advertised by the bundled provider. */
@@ -65,6 +68,22 @@ export const jieqiSkillProvider = {
 
 const ROUTE = '/plugins/dsh-jieqi/api'
 
+/** The skill's own table is the only source: | 节气 | 月建 | 一句话 |. */
+let TIP_CACHE = null
+function healthTips() {
+  if (TIP_CACHE) return TIP_CACHE
+  const tips = {}
+  try {
+    for (const line of readFileSync(TIP_FILE, 'utf8').split('\n')) {
+      const cells = line.split('|').map((cell) => cell.trim())
+      if (cells.length < 5 || !cells[1] || cells[1] === '节气' || /^-+$/.test(cells[1]) || !cells[3]) continue
+      tips[cells[1]] = cells[3]
+    }
+  } catch (error) { /* the card simply omits the line */ }
+  TIP_CACHE = tips
+  return tips
+}
+
 function sendJson(res, status, body) {
   res.statusCode = status
   res.setHeader('content-type', 'application/json; charset=utf-8')
@@ -94,7 +113,8 @@ export function apply(ctx) {
           sendJson(res, 400, { ok: false, error: 'date 需为 YYYY-MM-DD 的真实日期' })
           return
         }
-        sendJson(res, 200, { ok: true, ...solarTerm(date) })
+        const today = solarTerm(date)
+        sendJson(res, 200, { ok: true, ...today, tip: healthTips()[today.term] || '' })
       } catch (error) {
         sendJson(res, 500, { ok: false, error: String((error && error.message) || error) })
       }

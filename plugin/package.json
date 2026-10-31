@@ -1,6 +1,6 @@
 {
   "name": "dsh-jieqi",
-  "version": "0.4.0",
+  "version": "0.8.0",
   "description": "二十四节气卡片 + 内置 jieqi skill：对话区标题栏下沿的一颗小圆点，悬停展开今天的节气、七十二候、消息卦与年表 · A quiet solar-term dot under the conversation header, with the jieqi skill bundled.",
   "license": "MIT",
   "type": "module",

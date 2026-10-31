@@ -52,7 +52,11 @@ lives in `skill/jieqi/` at the repository root.
   day, a timer holds that promise too.
 - The system notification is scheduled for the exact term instant, up to a
   full term ahead, and fires once per term. Permission is asked on the first
-  click of the dot, never on page load.
+  click of the dot, never on page load. Clicking the notification raises this
+  window and unfolds the card on the new term.
+- The first frame is no longer blank: the last `today` payload is cached, painted
+  at once, and quietly replaced when the route answers — handy when the window
+  reopens cold or the Host is still starting.
 - The dot never goes stale: at local midnight, and whenever the page becomes
   visible or the window regains focus, the date is re-read and the card
   re-fetches by itself. A window left open overnight shows the new day, and a
@@ -68,7 +72,24 @@ lives in `skill/jieqi/` at the repository root.
   A date rollover still returns to the front page.
 - `问一问` drops a ready question into the composer; if the composer refuses
   the paste, the question is copied to the clipboard instead.
-- Clicking the card copies a one-line summary.
+- Clicking anywhere on the card copies a one-line summary — term, 候, day count
+  and the run to the next term. A press that turns into a drag never copies: the
+  pointer has to travel past the threshold before a release counts as a drag, so
+  dragging the window no longer wipes the clipboard. The badge on the title row
+  answers `已复制` for a moment, and says it to screen readers too.
+- The card itself is the biggest handle: hold it anywhere — not only the dot —
+  and the whole window follows, the dot riding along shrunk and dimmed. A flick
+  coasts a little (380ms) before settling; pressing again catches it where it is.
+- Under the 候 line sits one line of the season's own advice — `燥寒并至，宜平补…`
+  for 霜降 — taken from the bundled skill's 节气养生速查 table, clamped to two
+  lines with the full sentence in the tooltip. The route ships it as `tip`.
+- The countdown speaks in hours, not just days: `距立冬 6 天 17 小时`, the exact
+  instant in its tooltip, and on the term day itself a live countdown to the
+  minute (`距霜降 交节 43 分钟`) until the moment passes.
+- `Esc` folds the card from any page: on a sub-page it steps back to the front
+  page, on the front page it puts the card away and releases the pin with it.
+- The first time it ever loads, the dot stays at full strength and the card
+  carries one quiet line — `拖我走 · 点卡片复制 · Esc 收起` — then never again.
 - The 候 line (`二候 · 草木黄落 ›`) opens a second page: the term's three 候 on
   their real boundaries — past ones marked 已过, the current one counting down
   in days (hours inside the last day), the next ones with their start date.
@@ -113,6 +134,7 @@ lives in `skill/jieqi/` at the repository root.
   `dsh-jieqi.dismissed` (date the card was folded away),
   `dsh-jieqi.announced` / `dsh-jieqi.notified` (term instant already handled),
   `dsh-jieqi.told` (the day's toast already shown),
-  `dsh-jieqi.permission-asked`, `dsh-jieqi.accent` (auto | brand | tint key).
+  `dsh-jieqi.permission-asked`, `dsh-jieqi.accent` (auto | brand | tint key),
+  `dsh-jieqi.hinted` (`1` once the first-run line has been shown).
 - The 七十二候 table is hard-coded in `lib/client.js` (HOU), three lines per
   term; the 候 boundaries are thirds of the actual term length, not of 15 days.
