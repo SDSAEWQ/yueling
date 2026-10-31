@@ -77,15 +77,25 @@
 
 ### 方式一：插件页「添加插件」（最快）
 
-插件页右上角 **添加插件** 接受包名、GitHub 地址或本地目录，把这一行粘进去：
+插件页右上角 **添加插件** 接受包名、GitHub 地址或本地目录。
+
+**从 npm 装**（不用 git，推荐）：
+
+~~~text
+dshjieqi-card
+~~~
+
+**从 GitHub 装**（npm 连不上、或想追仓库最新代码时用）：
 
 ~~~text
 github:SDSAEWQ/dsh-jieqi#path:/plugin
 ~~~
 
-插件包在这个仓库的 `plugin/` 子目录里，所以 `#path:/plugin` 不能省。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点。
+GitHub 那行的 `#path:/plugin` 不能省——插件包在这个仓库的 `plugin/` 子目录里。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点。
 
-> **别只填 `dsh-jieqi`。** npm 上这个包名属于别人的占位包（0.0.1，里面只有一个 README，没有 `dsh` manifest），装上去不会出现节气卡片。要一个短名字直接可装，得等 npm 那边让出名字，或者我们另发一个自己的包名。
+> **为什么 npm 包名是 `dshjieqi-card`，不是 `dshjieqi`？** npm 上 `dsh-jieqi` 已经是别人的占位包（0.0.1，只有一个 README，没有 `dsh` manifest）；而 npm 会拒绝「只差标点」的新包名（防抢注），`dshjieqi` 被判 too similar 直接挡回来了。所以我们的包叫 `dshjieqi-card`，装出来的东西一模一样。
+>
+> 也别单独装 `dsh-jieqi`：那是空壳，装上去不会出现节气卡片。
 
 ### 方式二：插件市场索引（推荐）
 
@@ -108,6 +118,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 > 命令行等价写法（桌面版 profile 常被 Electron 独占，能走界面就走界面）：
 >
 > ~~~text
+> dsh plugin --profile web add dshjieqi-card
 > dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
 > ~~~
 

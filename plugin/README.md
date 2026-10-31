@@ -6,6 +6,22 @@ A quiet solar-term dot docked under the conversation header of the DeepSeek
 Harness Web GUI. Hover it and a small card unfolds: the term, which 候 of it
 we are in, the day count, and how far the next term is.
 
+## Install
+
+DSH → **Plugins** → **Add plugin**, and type:
+
+~~~text
+dshjieqi-card
+~~~
+
+That is this package on npm. From source instead:
+
+~~~text
+github:SDSAEWQ/dsh-jieqi#path:/plugin
+~~~
+
+Restart DSH (or press Ctrl+R) and the dot appears above the composer.
+
 ## Bundled skill
 
 The package also ships the `jieqi` skill in `assets/jieqi/` and registers it on

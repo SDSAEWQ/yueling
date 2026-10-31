@@ -55,18 +55,32 @@ MIT · plugin 0.8.0 · DSH 0.2.x desktop · any platform with the Web GUI
 ### Add plugin field (fastest)
 
 The **Plugins** page's **Add plugin** box takes a package name, a GitHub address
-or a local directory. Paste:
+or a local directory.
+
+**From npm** (no git needed, recommended):
+
+~~~text
+dshjieqi-card
+~~~
+
+**From GitHub** (if npm is unreachable, or you want the tip of the repo):
 
 ~~~text
 github:SDSAEWQ/dsh-jieqi#path:/plugin
 ~~~
 
-The plugin package sits in this repo's `plugin/` subdirectory, so `#path:/plugin`
-is required. Restart DSH (or press Ctrl+R in the window) and the dot appears
-above the composer.
+The `#path:/plugin` part is required — the plugin package sits in this repo's
+`plugin/` subdirectory. Restart DSH (or press Ctrl+R in the window) and the dot
+appears above the composer.
 
-> Do not type just `dsh-jieqi`: that npm name belongs to an unrelated placeholder
-> (0.0.1 — a README and nothing else, no `dsh` manifest), so nothing would show up.
+> **Why `dshjieqi-card` and not `dshjieqi`?** `dsh-jieqi` on npm is someone else's
+> placeholder (0.0.1 — a README and nothing else, no `dsh` manifest), and npm
+> rejects new names that differ from an existing one only by punctuation, so
+> `dshjieqi` was refused as *too similar*. Our package is `dshjieqi-card`; the
+> contents are identical.
+>
+> Do not install `dsh-jieqi` on its own either: it is an empty shell, nothing will
+> show up.
 
 ### Custom plugin market
 
@@ -92,6 +106,7 @@ GitHub.
 > so prefer the UI):
 >
 > ~~~text
+> dsh plugin --profile web add dshjieqi-card
 > dsh plugin --profile web add github:SDSAEWQ/dsh-jieqi#path:/plugin
 > ~~~
 

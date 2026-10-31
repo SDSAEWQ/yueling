@@ -9,6 +9,6 @@ url: https://github.com/SDSAEWQ/dsh-jieqi/tree/main/plugin
 name: SDSAEWQ/dsh-jieqi#plugin
 category: ui
 description:
-  en: A solar-term dot above the composer — hover it to see which of the 24 terms is running, the current pentad, the month's I Ching message hexagram and the countdown to the next term; the whole card drags anywhere, the year table lists all 24 term times, and each term carries one line of seasonal advice. Bundles a jieqi skill so the model looks terms up instead of reciting them.
-  zh: 输入框上方的一颗节气圆点——悬停展开今日节气、当前三候、当月十二消息卦与下一个节气倒计时；整张卡片可以拖到任意位置，年表列出全年二十四次交节时刻，每个节气还带一行养生提示。附带 jieqi skill，模型查节气不再凭记忆。
+  en: A solar-term dot above the composer — hover it to see which of the 24 terms is running, the current pentad, the month's I Ching message hexagram and the countdown to the next term; the whole card drags anywhere, the year table lists all 24 term times, and each term carries one line of seasonal advice. Bundles a jieqi skill so the model looks terms up instead of reciting them. Install: npm package dshjieqi-card, or GitHub SDSAEWQ/dsh-jieqi#plugin.
+  zh: 输入框上方的一颗节气圆点——悬停展开今日节气、当前三候、当月十二消息卦与下一个节气倒计时；整张卡片可以拖到任意位置，年表列出全年二十四次交节时刻，每个节气还带一行养生提示。附带 jieqi skill，模型查节气不再凭记忆。安装：npm 包名 dshjieqi-card，或 GitHub SDSAEWQ/dsh-jieqi#plugin。
 icon: https://raw.githubusercontent.com/SDSAEWQ/dsh-jieqi/main/docs/icon.png
