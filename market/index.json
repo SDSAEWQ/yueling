@@ -69,6 +69,15 @@
       },
       "versions": [
         {
+          "version": "0.11.1",
+          "publishTimestamp": 1793438658,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/SDSAEWQ/yueling",
+            "commit": "2e175fa93b32853f4cab3b5c2ce0f2faf78ce141"
+          }
+        },
+        {
           "version": "0.11.0",
           "publishTimestamp": 1793433303,
           "source": {
