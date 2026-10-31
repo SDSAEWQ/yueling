@@ -34,15 +34,15 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ## ✨ What it is
 
-| | |
+| Trait | What it means |
 | :---: | --- |
-| 🎯 | **One dot** — no sidebar slot, no focus steal, collapses when the mouse leaves |
-| 🧮 | **Computed locally** — sun's apparent longitude + ΔT, works offline |
-| 🀄 | **The old calendar** — sexagenary year · month branch · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
-| 📋 | **One line** — click anywhere on the card to copy today as a single summary |
-| 🫧 | **Drag anything** — the whole card moves; park it at an edge to leave a slim tab |
-| 🎨 | **Eight palettes** — one of them follows the season (spring green, autumn gold, winter blue) |
-| 🔔 | **Term reminder** — opens an hour early and posts a system notification at the exact instant |
+| 🎯 **One dot** | No sidebar slot, no focus steal, collapses when the mouse leaves |
+| 🧮 **Computed locally** | Sun's apparent longitude + ΔT, works offline |
+| 🀄 **The old calendar** | Sexagenary year · month branch · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
+| 📋 **One line** | Click anywhere on the card to copy today as a single summary |
+| 🫧 **Drag anything** | The whole card moves; park it at an edge to leave a slim tab |
+| 🎨 **Eight palettes** | One of them follows the season (spring green, autumn gold, winter blue) |
+| 🔔 **Term reminder** | Opens an hour early and posts a system notification at the exact instant |
 
 ~~~text
 ⬤ dot ── hover ──▶ 🌤 today ──┬── tap pentad ──▶ 🍃 pentads
@@ -54,12 +54,11 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ## 🎑 Four faces
 
-| | |
+| 🌤 Today · term · tip · countdown | 🍃 Pentads · days left in each |
 | :---: | :---: |
 | ![today](docs/today.png) | ![pentads](docs/hou.png) |
-| **🌤 Today**<br>term · tip · countdown | **🍃 Pentads**<br>days left in each pentad |
+| 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram |
 | ![year](docs/year.png) | ![hexagram](docs/gua.png) |
-| **📅 Year table**<br>all 24 instants of the year | **☯️ Hexagram**<br>month branch · sovereign hexagram |
 
 ---
 
