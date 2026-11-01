@@ -158,11 +158,9 @@ github:SDSAEWQ/yueling
 
 No #path suffix needed — the repository root is the package. Restart DSH (or press Ctrl+R), and a dot appears above the input box 🫧
 
-> **❓ Why is the npm name dshjieqi-card and not dshjieqi?** dsh-jieqi is already taken by a placeholder package (0.0.1, README only, no dsh manifest), and npm rejects new names that differ only in punctuation — dshjieqi was rejected as “too similar”. Same plugin, different name.
+> **❓ Why is the plugin id now dshjieqi-card?** Both dshjieqi and dsh-jieqi were taken on npm (0.0.1 stubs), and npm rejects names that differ only in punctuation. Since 0.11.2 the plugin id and the npm name are the same: the catalogue builder resolves a plugin by reading the repo's package.json name, looking that exact package up on npm and checking its repository points back at the repo — a mismatch keeps the plugin out of the official index forever, and leaves the version/downloads fields blank in the market card.
 >
-> ⚠️ Do not install dsh-jieqi: it is an empty shell and shows no card.
-
-> 🏷 **Renamed**: since Oct 2026 the repository is **Yueling** (`SDSAEWQ/yueling`); the old `SDSAEWQ/dsh-jieqi` URL redirects. The plugin id (dsh-jieqi), the npm name (dshjieqi-card) and existing installs are unchanged.
+> 🏷 **Renamed & migrated**: since Oct 2026 the repository is **Yueling** (`SDSAEWQ/yueling`) and the old `SDSAEWQ/dsh-jieqi` URL redirects. From 0.11.2 the plugin id changed from dsh-jieqi to dshjieqi-card — uninstall the old one first (or drop the dsh-jieqi line from your profile), otherwise two dots show up. Stored preferences keep the old localStorage prefix and will not carry over.
 
 ### Option 2 — Marketplace index (recommended)
 
@@ -174,7 +172,7 @@ DSH ships without a marketplace, but the Discover page accepts any index URL:
    ~~~text
    https://cdn.jsdelivr.net/gh/SDSAEWQ/yueling@main/market/index.json
    ~~~
-3. Search for dsh-jieqi or yueling (listed as **Yueling**) and hit install
+3. Search for dshjieqi-card or yueling (listed as **Yueling**) and hit install
 
 The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 
@@ -189,19 +187,19 @@ The jieqi skill is registered with the plugin, so option 4 becomes unnecessary.
 
 ### Option 3 — Manual (no git)
 
-1. Download the repo (Code → Download ZIP) and copy the repository root to **%USERPROFILE%\.dsh\plugins\dsh-jieqi** (`docs/` and `market/` are optional)
-2. Add a local link dependency in **%USERPROFILE%\.dsh\profiles\desktop\package.json** and append dsh-jieqi to dsh.profile.bundles
+1. Download the repo (Code → Download ZIP) and copy the repository root to **%USERPROFILE%\.dsh\plugins\dshjieqi-card** (`docs/` and `market/` are optional)
+2. Add a local link dependency in **%USERPROFILE%\.dsh\profiles\desktop\package.json** and append dshjieqi-card to dsh.profile.bundles
 3. Append the insert patch to **cordis.patch.yml**:
 
    ~~~yaml
    - insert:
        - id: jieqi
-         name: dsh-jieqi
+         name: dshjieqi-card
    ~~~
 4. Create a directory junction:
 
    ~~~powershell
-   New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-jieqi" -Target "$env:USERPROFILE\.dsh\plugins\dsh-jieqi"
+   New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dshjieqi-card" -Target "$env:USERPROFILE\.dsh\plugins\dshjieqi-card"
    ~~~
 5. Quit DSH completely and reopen it.
 
@@ -247,8 +245,8 @@ node scripts/jieqi.mjs --year
 
 | Method | Path | Description |
 | :--- | :--- | :--- |
-| GET | /plugins/dsh-jieqi/api/today?date=YYYY-MM-DD | Term, sexagenary, pentad, hexagram for a date (defaults to today) |
-| GET | /plugins/dsh-jieqi/api/year?year=YYYY | All 24 terms of a year with exact instants |
+| GET | /plugins/dshjieqi-card/api/today?date=YYYY-MM-DD | Term, sexagenary, pentad, hexagram for a date (defaults to today) |
+| GET | /plugins/dshjieqi-card/api/year?year=YYYY | All 24 terms of a year with exact instants |
 
 ~~~json
 {
@@ -321,7 +319,7 @@ yueling/                    ← repository root = the plugin package
 
 ## 🧹 Uninstall
 
-Remove dsh-jieqi from package.json and cordis.patch.yml, delete the junction and the plugin folder, restart DSH. localStorage keys prefixed dsh-jieqi.* may stay.
+Remove dshjieqi-card from package.json and cordis.patch.yml, delete the junction and the plugin folder, restart DSH. localStorage keys prefixed dshjieqi-card.* may stay.
 
 ## 📄 License
 

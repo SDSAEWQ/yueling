@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 24 节气速查：算法在 scripts/astro.mjs（与 dsh-jieqi 插件共用同一份，勿在此重复实现）。
+// 24 节气速查：算法在 scripts/astro.mjs（与 dshjieqi-card 插件共用同一份，勿在此重复实现）。
 // 用法: node jieqi.mjs [YYYY-MM-DD] [--year] [--json]
 import { solarTerm, termsOfYear, dayKey, stamp } from './astro.mjs'
 

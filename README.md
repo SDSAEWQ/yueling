@@ -158,11 +158,9 @@ github:SDSAEWQ/yueling
 
 GitHub 那行不用再加子目录后缀 —— 仓库根目录本身就是插件包。装完重启 DSH（或按 Ctrl+R 刷新窗口），输入框上方就会多一颗圆点 🫧
 
-> **❓ 为什么 npm 包名是 dshjieqi-card，不是 dshjieqi？** npm 上 dsh-jieqi 已经是别人的占位包（0.0.1，只有一个 README，没有 dsh manifest）；而 npm 会拒绝「只差标点」的新包名（防抢注），dshjieqi 被判 too similar 直接挡回来了。所以我们的包叫 dshjieqi-card，装出来的东西一模一样。
+> **❓ 为什么插件 ID 和 npm 包名都叫 dshjieqi-card？** npm 上的 dshjieqi、dsh-jieqi 都已经被别人占了（0.0.1 的空壳），而 npm 会拒绝「只差标点」的新包名（dshjieqi 被判 too similar 直接挡回来）。所以从 0.11.2 起插件 ID 与包名统一成 dshjieqi-card：目录构建器要按「仓库 package.json 的 name → npm 同名包 → repository 指回同一仓库」这条链对上，名字不一致就永远进不了官方索引，市场卡片上的版本与下载量也会一直是空的。
 >
-> ⚠️ 也别单独装 dsh-jieqi：那是空壳，装上去不会出现节气卡片。
-
-> 🏷 **仓库改名**：2026 年 10 月起仓库叫 **月令**（`SDSAEWQ/yueling`），旧地址 `SDSAEWQ/dsh-jieqi` 会 301 跳转；插件 ID（dsh-jieqi）、npm 包名（dshjieqi-card）和已装的人都不受影响。
+> 🏷 **改名与迁移**：2026 年 10 月起仓库叫 **月令**（`SDSAEWQ/yueling`），旧地址 `SDSAEWQ/dsh-jieqi` 会 301 跳转；0.11.2 起插件 ID 由 dsh-jieqi 改成 dshjieqi-card —— 装过老版本的人先把旧的卸掉（或从 profile 里删掉 dsh-jieqi 那一行）再装新的，否则会同时跑两份、出现两颗圆点。卡片位置、配色这些偏好存在旧前缀的 localStorage 里，不会自动搬过来。
 
 ### 方式二：插件市场索引（推荐）
 
@@ -176,7 +174,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
    ~~~
 
    （raw.githubusercontent.com 国内常常连不上，jsDelivr 更稳，两者内容一致。）
-3. 在 **发现** 页顶部的「搜索插件」框里直接打 dsh-jieqi（或翻列表找 **月令**），点卡片上的安装按钮
+3. 在 **发现** 页顶部的「搜索插件」框里直接打 dshjieqi-card（或翻列表找 **月令**），点卡片上的安装按钮
 
 安装完成后，jieqi skill 会随插件一起注册进会话技能目录，不需要再按方式四装一遍。
 
@@ -189,7 +187,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 > dsh plugin --profile web add github:SDSAEWQ/yueling
 > ~~~
 
-> 📮 提交到公共目录的条目在 market/awesome-entry.yml。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 dsh-jieqi 或 月令 就能直接装。
+> 📮 提交到公共目录的条目在 market/awesome-entry.yml。合并进 awesome-dsh-plugin 之后，dshmarket 里搜 dshjieqi-card 或 月令 就能直接装。
 
 > 🔏 索引只声明「从哪里装」，实际装什么由包自己的 package.json 决定；索引没有签名，升级需要卸载重装。
 
@@ -198,7 +196,7 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
 1. 下载本仓库（Code → Download ZIP），把仓库根目录整个复制到（`docs/`、`market/` 两份可以不要）：
 
    ~~~text
-   %USERPROFILE%\.dsh\plugins\dsh-jieqi
+   %USERPROFILE%\.dsh\plugins\dshjieqi-card
    ~~~
 
 2. 编辑 **%USERPROFILE%\.dsh\profiles\desktop\package.json**，在 dependencies 里加一行，在 dsh.profile.bundles 末尾加一项：
@@ -206,13 +204,13 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
    ~~~json
    {
      "dependencies": {
-       "dsh-jieqi": "link:C:/Users/<你的用户名>/.dsh/plugins/dsh-jieqi"
+       "dshjieqi-card": "link:C:/Users/<你的用户名>/.dsh/plugins/dshjieqi-card"
      },
      "dsh": {
        "profile": {
          "bundles": [
            "@deepseek-ai/dsh-base",
-           "dsh-jieqi"
+           "dshjieqi-card"
          ]
        }
      }
@@ -224,13 +222,13 @@ DSH 本体不带市场。社区有两个入口：**dshmarket** 插件市场读�
    ~~~yaml
    - insert:
        - id: jieqi
-         name: dsh-jieqi
+         name: dshjieqi-card
    ~~~
 
 4. 建一个目录联接（node_modules 里要能找到这个包）：
 
    ~~~powershell
-   New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-jieqi" -Target "$env:USERPROFILE\.dsh\plugins\dsh-jieqi"
+   New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dshjieqi-card" -Target "$env:USERPROFILE\.dsh\plugins\dshjieqi-card"
    ~~~
 
 5. 完全退出 DSH 再打开。宿主半边会随应用启动，页面按 **Ctrl+R** 刷新即可看到圆点。
@@ -291,8 +289,8 @@ node scripts/jieqi.mjs --year         # 附当年 24 节气全表
 
 | 方法 | 路径 | 说明 |
 | :--- | :--- | :--- |
-| GET | /plugins/dsh-jieqi/api/today?date=YYYY-MM-DD | 指定日期的节气、干支、候、消息卦；省略 date 为今天 |
-| GET | /plugins/dsh-jieqi/api/year?year=YYYY | 全年二十四节气与交节时刻 |
+| GET | /plugins/dshjieqi-card/api/today?date=YYYY-MM-DD | 指定日期的节气、干支、候、消息卦；省略 date 为今天 |
+| GET | /plugins/dshjieqi-card/api/year?year=YYYY | 全年二十四节气与交节时刻 |
 
 返回 JSON，形如：
 
@@ -370,12 +368,12 @@ yueling/                      ← 仓库根目录 = 插件包（月令）
 
 ## 🧹 卸载
 
-1. 从 **%USERPROFILE%\.dsh\profiles\desktop\package.json** 的 dependencies 与 dsh.profile.bundles 里删掉 dsh-jieqi
+1. 从 **%USERPROFILE%\.dsh\profiles\desktop\package.json** 的 dependencies 与 dsh.profile.bundles 里删掉 dshjieqi-card
 2. 删掉 **cordis.patch.yml** 末尾的 jieqi 那段 insert
-3. 删掉 **node_modules\dsh-jieqi** 联接与 **%USERPROFILE%\.dsh\plugins\dsh-jieqi** 目录
+3. 删掉 **node_modules\dshjieqi-card** 联接与 **%USERPROFILE%\.dsh\plugins\dshjieqi-card** 目录
 4. 重启 DSH
 
-localStorage 里的 dsh-jieqi.* 键可留可删，不影响其他功能。
+localStorage 里的 dshjieqi-card.* 键可留可删，不影响其他功能。
 
 ---
 

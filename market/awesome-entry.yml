@@ -1,6 +1,6 @@
 # Entry submitted to the public catalogue:
 #   repo: https://github.com/awesome-dsh-plugin/awesome-dsh-plugin
-#   file: data/plugins/SDSAEWQ__dsh-jieqi--plugin.yml   (one file, one PR)
+#   file: data/plugins/SDSAEWQ__yueling.yml   (one file, one PR)
 # Merge order: CI checks entry count -> dsh.bundle -> repo age (>= 1 day)
 # -> awesome-lint / site build. After merge the site regenerates READMEs and
 # https://awesome-dsh-plugin.com/plugins.json lists the plugin, which is what

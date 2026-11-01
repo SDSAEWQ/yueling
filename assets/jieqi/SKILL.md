@@ -37,4 +37,4 @@ description: 二十四节气与干支历速查，按天文黄经精确计算（�
 ## 数据来源
 
 - 养生句：references/节气养生速查.md（24 条，脚本内嵌同一份）
-- 计算：scripts/astro.mjs——Meeus《Astronomical Algorithms》太阳视黄经 + ΔT + 二分法；与 dsh-jieqi 插件同一份文件，改算法只改这里（再同步给插件）。
+- 计算：scripts/astro.mjs——Meeus《Astronomical Algorithms》太阳视黄经 + ΔT + 二分法；与 dshjieqi-card 插件同一份文件，改算法只改这里（再同步给插件）。

@@ -1,4 +1,4 @@
-# dsh-jieqi · behaviour reference
+# dshjieqi-card · behaviour reference
 
 > Implementation-level notes for the plugin as it ships in this repository (0.9.1: the repository root is the package). User-facing docs: [../README.md](../README.md) / [../README.en.md](../README.en.md).
 
@@ -22,8 +22,8 @@ already resolved, so the model can run it directly. There is no separate copy an
   12 消息卦, 三伏, 数九, and the 干支 calendar. The `jieqi` skill carries the same
   file, so the plugin and the skill can never disagree.
 - `lib/index.js` — Host half: a thin wrapper over `astro.mjs` that serves
-  `GET /plugins/dsh-jieqi/api/today[?date=YYYY-MM-DD]` and
-  `GET /plugins/dsh-jieqi/api/year?year=YYYY`.
+  `GET /plugins/dshjieqi-card/api/today[?date=YYYY-MM-DD]` and
+  `GET /plugins/dshjieqi-card/api/year?year=YYYY`.
 - `lib/client.js` — browser half: one `shell.overlay` entry. No dependency on
   the Host beyond that one JSON route; every behaviour degrades quietly.
 
@@ -123,7 +123,7 @@ already resolved, so the model can run it directly. There is no separate copy an
   under reduced motion — moving lines drawn in the accent colour with ○ or ×
   beside them; the sixth brings the primary hexagram, the changed one, its
   trigrams and one sentence. 「复制卦意」 copies the reading, 「再摇一卦」
-  throws again. Throws are kept in `dsh-jieqi.castlog` (`[{ date, values }]`,
+  throws again. Throws are kept in `dshjieqi-card.castlog` (`[{ date, values }]`,
   seven days at most; a re-throw replaces its own day), so the card shows the
   same result until the date changes; a row of date chips under the throw walks
   back through the past week (today highlighted, `今天` as its label), and tapping
@@ -153,19 +153,19 @@ already resolved, so the model can run it directly. There is no separate copy an
   change the maths, change `lib/astro.mjs` and copy the file into
   `~/.agents/skills/jieqi/scripts/astro.mjs` — both halves read it.
 - Times are China Standard Time (UTC+8), which has no DST.
-- localStorage: `dsh-jieqi.dock` (x on the header rail, viewport px),
-  `dsh-jieqi.mode` (`free` or `edge` when the dot was parked away from the
-  rail), `dsh-jieqi.pos` (that point: JSON `{ x, y }` for `free`,
+- localStorage: `dshjieqi-card.dock` (x on the header rail, viewport px),
+  `dshjieqi-card.mode` (`free` or `edge` when the dot was parked away from the
+  rail), `dshjieqi-card.pos` (that point: JSON `{ x, y }` for `free`,
   `{ side, y }` for `edge`),
-  `dsh-jieqi.page` (`year`, `hou`, `gua` or `day`; absent on the front page),
-  `dsh-jieqi.pinned` (`1` while the card is pinned open),
-  `dsh-jieqi.dismissed` (date the card was folded away),
-  `dsh-jieqi.announced` / `dsh-jieqi.notified` (term instant already handled),
-  `dsh-jieqi.told` (the day's toast already shown),
-  `dsh-jieqi.permission-asked`, `dsh-jieqi.accent` (auto | brand | tint key),
-  `dsh-jieqi.hinted` (`1` once the first-run line has been shown),
-  `dsh-jieqi.cast` (`{ date, values }`: today's six throws, dropped when the
-  date no longer matches), `dsh-jieqi.castlog` (the last seven days' throws, each
+  `dshjieqi-card.page` (`year`, `hou`, `gua` or `day`; absent on the front page),
+  `dshjieqi-card.pinned` (`1` while the card is pinned open),
+  `dshjieqi-card.dismissed` (date the card was folded away),
+  `dshjieqi-card.announced` / `dshjieqi-card.notified` (term instant already handled),
+  `dshjieqi-card.told` (the day's toast already shown),
+  `dshjieqi-card.permission-asked`, `dshjieqi-card.accent` (auto | brand | tint key),
+  `dshjieqi-card.hinted` (`1` once the first-run line has been shown),
+  `dshjieqi-card.cast` (`{ date, values }`: today's six throws, dropped when the
+  date no longer matches), `dshjieqi-card.castlog` (the last seven days' throws, each
   `{ date, values }`, pruned to six days back on every write).
 - The 七十二候 table is hard-coded in `lib/client.js` (HOU), three lines per
   term; the 候 boundaries are thirds of the actual term length, not of 15 days.

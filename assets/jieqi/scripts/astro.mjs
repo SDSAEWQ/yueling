@@ -1,5 +1,5 @@
 /**
- * dsh-jieqi — the astronomy, in one place.
+ * dshjieqi-card — the astronomy, in one place.
  *
  * The 24 solar terms are the instants when the Sun's apparent ecliptic
  * longitude reaches 15° steps. This module finds them with Meeus' low

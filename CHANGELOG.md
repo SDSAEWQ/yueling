@@ -1,5 +1,12 @@
 # 月令 · 变更记录
 
+## 0.11.2 — 2026-11-01
+
+- 插件 ID 与包名统一成 `dshjieqi-card`（原 `dsh-jieqi`）。原因不是洁癖：官方目录的构建器按「仓库 package.json 的 name → npm 上同名包 → 该包的 repository 指回同一仓库」匹配，我们仓库写着 dsh-jieqi、npm 上真正发布的是 dshjieqi-card，两边对不上，这条就永远进不了 index.json —— 也就是「发现」页里搜不到、市场卡片上版本与下载量一直是空的根因。改完两处一致，下一班夜间构建（北京时间每天 12:30 左右）就会把月令收进官方索引。
+- 跟着改的一串：client 的模块 id 与命名空间、两个 HTTP 路由前缀（现在是 /plugins/dshjieqi-card/api/…）、全部 localStorage 键前缀、`index.js` 的 `export const name`、`cordis.patch.yml` 的 `name`、测试里的断言，以及 README / behaviour 文档里的安装、卸载与接口地址。
+- 迁移：装过老版本的人先卸掉 dsh-jieqi 再装 dshjieqi-card，否则两份同时加载、出现两颗圆点。卡片位置、配色、摇卦历史存在旧前缀的键里，不会自动迁移。
+- 顺带把 README 里那两句已经不成立的说明（「dshjieqi-card 是别人的空壳」「别单独装 dshjieqi-card」）改掉 —— 它们描述的是改名之前的状态。
+
 ## 0.11.1 — 2026-10-31
 
 - 仓库改名：`SDSAEWQ/dsh-jieqi` → `SDSAEWQ/yueling`（月令）。旧地址、旧 release 链接、旧的 jsDelivr 地址都会 301 跳过去；插件 ID `dsh-jieqi`、npm 包名 `dshjieqi-card`、市场和已装的人都没有动，不用重装。

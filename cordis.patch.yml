@@ -1,4 +1,4 @@
-# dsh-jieqi: a solar-term card in the bottom-right corner on open
+# dshjieqi-card: a solar-term card in the bottom-right corner on open
 - insert:
     - id: jieqi
-      name: dsh-jieqi
+      name: dshjieqi-card

@@ -70,10 +70,10 @@ const check = (condition, label, detail) => {
   sandbox.globalThis = sandbox
   vm.runInNewContext(source, sandbox, { filename: 'client.js' })
   const spec = win.__spec
-  check(spec && spec.id === 'dsh-jieqi', 'module id is dsh-jieqi')
+  check(spec && spec.id === 'dshjieqi-card', 'module id is dshjieqi-card')
   let mod = null
   try { mod = spec.factory((name) => (name === 'react' ? React : null)) } catch (error) { check(false, 'factory runs', error.message) }
-  check(mod && mod.name === 'dsh-jieqi', 'plugin name is dsh-jieqi')
+  check(mod && mod.name === 'dshjieqi-card', 'plugin name is dshjieqi-card')
   check(mod && Array.isArray(mod.inject) && mod.inject.includes('slots'), 'plugin injects slots')
   check(mod && typeof mod.apply === 'function', 'plugin exports apply()')
 }
@@ -138,16 +138,16 @@ const { solarTerm, yearView, dayGanzhi, hourGanzhi } = await import('../lib/astr
     return { status: res.statusCode, json: body ? JSON.parse(body) : null }
   }
 
-  const today = call('/plugins/dsh-jieqi/api/today', '?date=2026-10-31')
+  const today = call('/plugins/dshjieqi-card/api/today', '?date=2026-10-31')
   check(today.status === 200 && today.json.ok, 'today route answers 200')
   check(today.json.term === '霜降', 'today route term is 霜降')
   check(typeof today.json.tip === 'string' && today.json.tip.length > 4, 'today route carries the 养生 tip', JSON.stringify(today.json.tip))
   check(today.json.ganzhi.day && today.json.ganzhi.day.name === '戊寅', 'today route carries the day pillar')
 
-  const bad = call('/plugins/dsh-jieqi/api/today', '?date=2026-13-40')
+  const bad = call('/plugins/dshjieqi-card/api/today', '?date=2026-13-40')
   check(bad.status === 400, 'today route rejects a bad date', String(bad.status))
 
-  const year = call('/plugins/dsh-jieqi/api/year', '?year=2026')
+  const year = call('/plugins/dshjieqi-card/api/year', '?year=2026')
   check(year.status === 200 && year.json.terms.length === 24, 'year route answers 24 terms')
 
   const provider = ctx.provider && ctx.provider()

@@ -1,6 +1,6 @@
 {
-  "name": "dsh-jieqi",
-  "version": "0.11.1",
+  "name": "dshjieqi-card",
+  "version": "0.11.2",
   "description": "二十四节气卡片 + 内置 jieqi skill：对话区标题栏下沿的一颗小圆点，悬停展开今天的节气、日柱时辰、七十二候、消息卦、养生一句与年表，点日柱看今天适合做的事，卦页能铜钱摇一卦并回看七天 · A quiet drag-anywhere solar-term dot under the conversation header, with day/hour pillars, a day reading page, a seven-day cast log and the jieqi skill bundled.",
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,8 @@
     "节气",
     "iching",
     "hexagram",
-    "六十四卦"
+    "六十四卦",
+    "yueling"
   ],
   "dsh": {
     "manifestVersion": 1,
