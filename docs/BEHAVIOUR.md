@@ -68,6 +68,14 @@ already resolved, so the model can run it directly. There is no separate copy an
   fold still work.
 - `Alt+J` toggles the card from the keyboard: pin it open, or fold it back
   into the dot. It works anywhere in the window and does not steal typing.
+  When it opens the card the focus goes in with it; closing hands the focus
+  back to the dot instead of dropping it on `<body>`.
+- The same keyboard map covers the rest: `←` `→` flip through the five faces,
+  `1`–`5` jump to one, `?` opens the gesture sheet, and none of it fires while
+  the caret sits in an input, a textarea or a contenteditable editor.
+- `Esc` peels one layer at a time: a drag in progress is cancelled and the
+  card (or the dot) goes back where it started; the gesture sheet steps back
+  to the front; another sub-page steps back too; the front page folds.
 - The page you leave open is the page that comes back: fold the card on the
   年表, reload, unfold it, and the 年表 is still there (likewise 候 and 卦).
   A date rollover still returns to the front page.
@@ -104,7 +112,15 @@ already resolved, so the model can run it directly. There is no separate copy an
 - `Esc` folds the card from any page: on a sub-page it steps back to the front
   page, on the front page it puts the card away and releases the pin with it.
 - The first time it ever loads, the dot stays at full strength and the card
-  carries one quiet line — `拖我走 · 点卡片复制 · Esc 收起` — then never again.
+  carries one quiet line — `拖我走 · 点卡片复制 · ? 看全部手势` — then never again.
+- A second click on the dot inside 450ms is read as a double-click, not as a
+  second toggle: it undoes the pin the first click just made and recentres
+  the dot, so a double-click never leaves the card pinned.
+- A double-click on the card body copies once, not twice (the second copy
+  inside 400ms is dropped), so the 已复制 badge does not blink.
+- A touch is allowed to wobble 9px before a tap becomes a drag; a mouse only
+  3px. `问一问` folds the card and puts the caret back in the editor after it
+  fills the prompt.
 - The 候 line (`二候 · 草木黄落 ›`) opens a second page: the term's three 候 on
   their real boundaries — past ones marked 已过, the current one counting down
   in days (hours inside the last day), the next ones with their start date.

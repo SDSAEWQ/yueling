@@ -104,6 +104,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 - 🎯 Double-click or right-click the dot to return to the center
 - 📍 Click the dot (or focus and press Enter / Space) to pin the card
 - ⌨️ **Alt+J** toggles it globally without stealing focus
+- ⌨️ The keyboard covers the rest: **← →** flip the five faces, **1–5** jump to one, **?** opens the gesture sheet; none of it fires while typing
 - ✖️ × only hides it for today; the dot stays
 - 💾 Position, pin state, current page and palette are remembered
 
@@ -222,7 +223,7 @@ node scripts/jieqi.mjs --year
 | :--- | :--- |
 | 🖱️ Hover the dot | Opens the card, closes when the mouse leaves |
 | 📌 Click the dot / Enter / Space | Pins the card |
-| ⌨️ **Alt+J** | Toggles the card globally |
+| ⌨️ **Alt+J** | Toggles the card; the focus moves in, and back to the dot |
 | 🫳 Drag the dot | Docks to the title bar, free position, or a slim edge tab |
 | 🫴 Drag the card body | Moves the whole window with inertia |
 | 🔔 Click the notification | Opens the card |
@@ -237,7 +238,10 @@ node scripts/jieqi.mjs --year
 | 📋 Tap 「复制卦意」 | Copies the hexagram and its sentence |
 | 🎨 Tap a palette dot | Eight palettes |
 | 📋 Click empty card space | Copies the one-line summary |
-| ⎋ Esc / ‹ | Back |
+| ⌨️ ← → | Flip through the five faces |
+| ⌨️ 1 – 5 | Jump to a face |
+| ⌨️ ? | Opens the gesture sheet (never while typing) |
+| ⎋ Esc / ‹ | Back; on the front page it folds; while dragging it cancels |
 
 ---
 
