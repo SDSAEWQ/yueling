@@ -295,6 +295,7 @@ async function main() {
   const message = commitMessage || 'release ' + version;
   git('add', '-A');
   const staged = git('diff', '--cached', '--name-only');
+  say('  ', staged ? '提交 ' + staged.split('\n').length + ' 个文件：' + staged.split('\n').join(', ') : '没有要提交的改动');
   if (staged) git('commit', '-m', message);
   let releaseSha = git('rev-parse', 'HEAD');
   if (!SKIP.has('--skip-push')) {
@@ -411,8 +412,12 @@ async function main() {
     say('  ', '没有 ' + INSTALL_DIR + '，跳过');
   }
 
-  console.log('\n' + version + ' 发完：' + SITE + '/releases/tag/' + tag);
-  console.log('GitHub 源的用户靠 package.json 的 version 判更新，npm 源用户靠 npm publish —— 两件都做了。');
+  if (SKIP.has('--skip-release') || SKIP.has('--skip-tag')) {
+    console.log('\n已推 ' + BRANCH + '：' + SITE + '/commit/' + releaseSha + '（tag / Release 被跳过）');
+  } else {
+    console.log('\n' + version + ' 发完：' + SITE + '/releases/tag/' + tag);
+    console.log('GitHub 源的用户靠 package.json 的 version 判更新，npm 源用户靠 npm publish —— 两件都做了。');
+  }
 }
 
 main().catch((e) => {
