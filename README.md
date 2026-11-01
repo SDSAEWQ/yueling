@@ -343,6 +343,14 @@ npm test        # node test/smoke.mjs
 
 推上去之后 GitHub Actions（.github/workflows/ci.yml）会跑同样一套：五个文件 node --check + npm test。
 
+发版是一行：
+
+~~~text
+node scripts/release.mjs patch        # 0.11.2 -> 0.11.3
+~~~
+
+它依次改版本号、跑语法检查与 npm test、用 GitHub API 推 main、npm publish、把新版本 pin 进 market/index.json 再推一次、打 tag、建 Release、purge jsDelivr，最后同步本机的安装副本。CHANGELOG.md 里要先有同名小节（Release 正文从那里取）；每步幂等，中途断了用同一个版本号重跑即可，--dry-run 只检查不写。
+
 ---
 
 ## 🗂️ 目录结构
@@ -358,6 +366,7 @@ yueling/                      ← 仓库根目录 = 插件包（月令）
 ├─ assets/jieqi/             内置 skill（SKILL.md + scripts + references）
 ├─ market/index.json         可添加的插件市场索引（format 1）
 ├─ test/smoke.mjs            零依赖冒烟测试（npm test）
+├─ scripts/release.mjs       一键发版（版本 / 推送 / npm / 索引 / tag）
 ├─ .github/workflows/ci.yml  GitHub Actions：语法 + 冒烟
 ├─ docs/                     截图、动图、图标与 BEHAVIOUR.md
 ├─ README.md / README.en.md  两份展示版说明

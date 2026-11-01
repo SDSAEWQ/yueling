@@ -296,6 +296,14 @@ The smoke test loads client.js into a fake window inside plain Node, checks that
 
 On push, GitHub Actions (.github/workflows/ci.yml) runs the same set: node --check on five files plus npm test.
 
+Releasing is one command:
+
+~~~text
+node scripts/release.mjs patch        # 0.11.2 -> 0.11.3
+~~~
+
+It bumps the version, runs the checks, pushes main through the GitHub API, publishes to npm, pins the new version in market/index.json, tags the commit, writes the Release, purges jsDelivr and refreshes the local install. Write the matching section in CHANGELOG.md first — the release notes come from it. Every step is idempotent, so re-running the same version resumes a half-finished release; --dry-run only checks.
+
 ---
 
 ## 🗂️ Layout
@@ -311,6 +319,7 @@ yueling/                    ← repository root = the plugin package
 ├─ assets/jieqi/           bundled skill (SKILL.md + scripts + references)
 ├─ market/index.json       index you can add to the marketplace
 ├─ test/smoke.mjs          zero-dependency smoke test (npm test)
+├─ scripts/release.mjs     one-command release (version / push / npm / index / tag)
 ├─ .github/workflows/      ci.yml: syntax + smoke
 ├─ docs/                   screenshots, demo gif, icon and BEHAVIOUR.md
 ├─ README.md / README.en.md
