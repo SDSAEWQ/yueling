@@ -81,8 +81,10 @@ already resolved, so the model can run it directly. There is no separate copy an
   A date rollover still returns to the front page.
 - `问一问` drops a ready question into the composer; if the composer refuses
   the paste, the question is copied to the clipboard instead.
-- Clicking anywhere on the card copies a one-line summary — term, 候, day count
-  and the run to the next term. A press that turns into a drag never copies: the
+- Clicking anywhere on the card copies a forward-ready note, one line per item:
+  `11月24日 周一 · 小雪 第 3 天`, `农历 十月十六 · 属马 · 满月`, `候 · 鹖鴠不鸣`,
+  the festival line, the seasonal tip, `距大雪 12 天`, and a `—— 月令 · 二十四节气`
+  footer. A press that turns into a drag never copies: the
   pointer has to travel past the threshold before a release counts as a drag, so
   dragging the window no longer wipes the clipboard. The badge on the title row
   answers `已复制` for a moment, and says it to screen readers too.
@@ -99,6 +101,14 @@ already resolved, so the model can run it directly. There is no separate copy an
   stem by the five-rats rule (五鼠遁). The tooltip spells out `庚申时 · 15-17`.
   A dated `?date=` lookup has no live hour, so the route answers `null` there
   instead of inventing one.
+- A quiet line under the pillar reads `农历 九月二十 · 属马 · 🌒 蛾眉月` — the
+  lunar date (with `闰` for a leap month), the year animal (turning at 正月, so
+  it is not the same boundary as the 立春-turning 干支 year) and the day's moon
+  phase. Both come from the same Meeus lunar theory in `lib/astro.mjs`, not a table.
+- One more quiet line under the lunar row counts down to the next lunar festival:
+  `距中秋 12 天`, or `今日中秋` on the day itself. Only the eight 大节 count —
+  春节, 元宵, 端午, 七夕, 中秋, 重阳, 腊八, 小年 — and a leap month never passes
+  one, the same rule the almanac uses. The date sits in the tooltip.
 - The countdown speaks in days and 时辰 (two-hour stretches), not just days:
   `距立冬 7 天 1 时辰`; under an hour it falls back to minutes, and the exact
   instant sits in its tooltip. On the term day itself it becomes a live countdown
@@ -124,7 +134,8 @@ already resolved, so the model can run it directly. There is no separate copy an
 - The 候 line (`二候 · 草木黄落 ›`) opens a second page: the term's three 候 on
   their real boundaries — past ones marked 已过, the current one counting down
   in days (hours inside the last day), the next ones with their start date.
-  `‹` or `Esc` returns; a date rollover returns on its own.
+  Each 候 carries a one-line plain gloss under its name. `‹` or `Esc` returns;
+  a date rollover returns on its own.
 - The right end of the countdown line carries the month's 消息卦 as twelve
   narrow lines: 阳 a solid stroke, 阴 a split one, the top line 上爻. 戌月 is
   剥 (five 阴 under one 阳), 子月 复, 寅月 泰 — the same twelve-hexagram cycle
@@ -134,11 +145,22 @@ already resolved, so the model can run it directly. There is no separate copy an
 - Below that the 卦 page carries the coin throw: three coins six times, a back
   counting 3 and a face 2, so 6 老阴, 7 少阳, 8 少阴 and 9 老阳 — the old coin
   method. Randomness comes from `window.crypto.getRandomValues` with rejection
-  sampling (never `Math.random` unless the platform has no crypto), and nothing
+  sampling (never `Math.random` unless the platform has no crypto) — a
+  **pseudo-random** stream, not true randomness, and the card says so; nothing
   leaves the machine. The six lines land bottom-up, one every 112 ms — at once
   under reduced motion — moving lines drawn in the accent colour with ○ or ×
   beside them; the sixth brings the primary hexagram, the changed one, its
-  trigrams and one sentence. 「复制卦意」 copies the reading, 「再摇一卦」
+  trigrams and one sentence — the plain layer first: the sentence of meaning,
+  then, when there are moving lines, the changed hexagram's name and its own
+  one-sentence meaning, then each moving line's short plain gloss (a
+  still cast has no moving lines, so no line texts are shown). The classical
+  text — the primary hexagram's 卦辞, 彖传 and 象, the changed hexagram's 卦辞,
+  each moving line's 爻辞 and
+  小象 — folds behind 「看原文」 and expands on click (all 384 爻 and 64 彖 /
+  小象 are built into `client.js`). A row of
+  「所问」主题 chips above the throw gives the cast a context (事业/感情/出行/健康,
+   stored locally) and rides along in the copied text. 「复制卦意」 copies the
+  reading (changed hexagram included), 「再摇一卦」
   throws again. Throws are kept in `dshjieqi-card.castlog` (`[{ date, values }]`,
   seven days at most; a re-throw replaces its own day), so the card shows the
   same result until the date changes; a row of date chips under the throw walks
@@ -169,6 +191,10 @@ already resolved, so the model can run it directly. There is no separate copy an
   change the maths, change `lib/astro.mjs` and copy the file into
   `~/.agents/skills/jieqi/scripts/astro.mjs` — both halves read it.
 - Times are China Standard Time (UTC+8), which has no DST.
+- The lunar date and moon phase share the same Meeus lunar longitude; a new moon
+  lands within roughly ±20 minutes, so a 朔 that falls right at Beijing midnight
+  may move the lunar day by one against the official almanac — a known, accepted
+  approximation rather than a table lookup.
 - localStorage: `dshjieqi-card.dock` (x on the header rail, viewport px),
   `dshjieqi-card.mode` (`free` or `edge` when the dot was parked away from the
   rail), `dshjieqi-card.pos` (that point: JSON `{ x, y }` for `free`,

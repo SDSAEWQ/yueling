@@ -76,6 +76,21 @@ const check = (condition, label, detail) => {
   check(mod && mod.name === 'dshjieqi-card', 'plugin name is dshjieqi-card')
   check(mod && Array.isArray(mod.inject) && mod.inject.includes('slots'), 'plugin injects slots')
   check(mod && typeof mod.apply === 'function', 'plugin exports apply()')
+  check(source.includes('用九：见群龙无首'), 'client.js carries 用九')
+  check(source.includes('用六：利永贞'), 'client.js carries 用六')
+  check(source.includes('const HEX_TUAN'), 'client.js carries 彖传')
+  check(source.includes('const HEX_XIAOXIANG'), 'client.js carries 小象传')
+  check(source.includes("'看原文'") && source.includes("'收起原文'"), 'client.js folds the classical text behind 看原文')
+  check(!source.includes('styles.castCi') && !source.includes('styles.castTuan'), 'client.js no longer prints 原文 by default')
+  check(source.includes('styles.castYaoGloss'), 'client.js paints the plain layer first')
+  check(source.includes('已取消所问'), 'client.js confirms a cleared theme')
+  check(source.includes("name + ' ✕'"), 'client.js marks the single picked theme')
+  check(source.includes('inset 0 0 0 1px var(--jieqi-accent'), 'client.js rings the picked theme without a border')
+  check(/const THEMES = \['事业', '感情', '出行', '健康'\]/.test(source), 'client.js keeps 所问 to four themes')
+  check(source.includes('styles.festivalRow') && source.includes('info.festival.days === 0'), 'client.js counts down to the next lunar festival')
+  check(source.includes("'之卦 ' + HEX_NAMES[castHex.zhi.no]"), 'client.js names the changed hexagram in the plain layer')
+  check(source.includes('之卦卦辞：'), 'client.js carries the changed hexagram text in 复制卦意')
+  check(source.includes('—— 月令 · 二十四节气'), 'client.js copies a forward-ready note')
 }
 
 // ----------------------------------------------------------------- 2. astro
@@ -87,7 +102,7 @@ const check = (condition, label, detail) => {
 }
 
 // ----------------------------------------------------------------- 3. hosts
-const { solarTerm, yearView, dayGanzhi, hourGanzhi } = await import('../lib/astro.mjs')
+const { solarTerm, yearView, dayGanzhi, hourGanzhi, lunarDate, moonPhase, dayNumber } = await import('../lib/astro.mjs')
 {
   // Anchors cross-checked against lunar-javascript (jsDelivr build).
   const anchors = [
@@ -113,6 +128,33 @@ const { solarTerm, yearView, dayGanzhi, hourGanzhi } = await import('../lib/astr
   const year = yearView(2026)
   check(year.terms.length === 24, 'year view has 24 terms', String(year.terms.length))
   check(typeof dayGanzhi(739000).name === 'string', 'dayGanzhi returns a name')
+
+  // 农历 / 月相 anchors, cross-checked against the published calendar.
+  const d = (s) => dayNumber(new Date(s + 'T03:00:00Z'))
+  const L1 = lunarDate(d('2024-02-10'))
+  check(L1 && L1.month === 1 && L1.day === 1 && !L1.isLeap && L1.zodiac === '龙', '2024-02-10 is 正月初一 龙年', JSON.stringify(L1))
+  const L2 = lunarDate(d('2023-03-22'))
+  check(L2 && L2.isLeap && L2.month === 2 && L2.day === 1, '2023-03-22 is 闰二月初一', JSON.stringify(L2))
+  const L3 = lunarDate(d('2025-07-25'))
+  check(L3 && L3.isLeap && L3.month === 6 && L3.day === 1, '2025-07-25 is 闰六月初一', JSON.stringify(L3))
+  const L4 = lunarDate(d('2024-01-01'))
+  check(L4 && L4.year === 2023 && L4.month === 11, '2024-01-01 is 2023年冬月', JSON.stringify(L4))
+  const M1 = moonPhase(d('2024-02-24'))
+  check(M1 && M1.phase === '望', '2024-02-24 is 满月', JSON.stringify(M1))
+  const M2 = moonPhase(d('2024-02-10'))
+  check(M2 && M2.phase === '朔', '2024-02-10 is 新月', JSON.stringify(M2))
+  const z = solarTerm('2024-02-10')
+  check(z.lunar && z.lunar.monthName === '正月' && z.moon && z.zodiac && z.zodiac.day === '龙', 'today carries lunar/zodiac/moon', JSON.stringify({ lunar: z.lunar, zodiac: z.zodiac, moon: z.moon }))
+
+  // 农历节令：只认八个大节，闰月不过节。
+  const F1 = solarTerm('2024-02-10')
+  check(F1.festival && F1.festival.name === '春节' && F1.festival.days === 0, '2024-02-10 is 春节 itself', JSON.stringify(F1.festival))
+  const F2 = solarTerm('2025-10-01')
+  check(F2.festival && F2.festival.name === '中秋' && F2.festival.days === 5, '2025-10-01 is five days from 中秋', JSON.stringify(F2.festival))
+  const F3 = solarTerm('2026-11-24')
+  check(F3.festival && F3.festival.name === '腊八' && F3.festival.days === 52, '2026-11-24 counts down to 腊八', JSON.stringify(F3.festival))
+  const F4 = solarTerm('2023-06-22')
+  check(F4.festival && F4.festival.name === '端午' && F4.festival.days === 0, '2023-06-22 is 端午 (闰月不过节)', JSON.stringify(F4.festival))
 }
 
 // ---------------------------------------------------------------- 4. routes

@@ -47,9 +47,9 @@ Every transition instant is computed locally from the sun's apparent longitude
 | :---: | --- |
 | 🎯 **One dot** | No sidebar slot, no focus steal, collapses when the mouse leaves |
 | 🧮 **Computed locally** | Sun's apparent longitude + ΔT, works offline |
-| 🀄 **The old calendar** | Sexagenary year · month branch · day pillar · double-hour · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
-| 📋 **One line** | Click anywhere on the card to copy today as a single summary |
-| 🎲 **Cast a hexagram** | Three coins, six throws, six lines settle bottom-up, one sentence of meaning |
+| 🀄 **The old calendar** | Sexagenary year · month branch · day pillar · double-hour · lunar date, zodiac & moon phase · 72 pentads · 12 sovereign hexagrams · 三伏/数九 |
+| 📋 **A short note** | Click anywhere on the card to copy today as a forward-ready note (term · lunar · pentad · festival · tip · countdown) |
+| 🎲 **Cast a hexagram** | Three coins, six throws, six lines settle bottom-up: one sentence of meaning first, the classical texts a tap away |
 | 🫧 **Drag anything** | The whole card moves; park it at an edge to leave a slim tab |
 | 🎨 **Eight palettes** | One of them follows the season (spring green, autumn gold, winter blue) |
 | 🔔 **Term reminder** | Opens an hour early and posts a system notification at the exact instant |
@@ -65,13 +65,13 @@ Every transition instant is computed locally from the sun's apparent longitude
 
 ## 🎑 Six faces
 
-| 🌤 Today · term · day pillar · tip · countdown | 🍃 Pentads · days left in each |
+| 🌤 Today · term · day pillar · lunar · tip · festival | 🍃 Pentads · days left in each |
 | :---: | :---: |
-| ![today](docs/today.png) | ![pentads](docs/hou.png) |
-| 📅 **Year table** · all 24 instants | ☯️ **Hexagram** · month branch · sovereign hexagram · casting |
-| ![year](docs/year.png) | ![hexagram](docs/gua.png) |
-| 🧭 **Day pillar** · nayin · decade · what suits today | 🗂️ **Seven days** · the casts of the past week |
-| ![day pillar](docs/day.png) | ![seven days](docs/guaold.png) |
+| <img src="docs/today.png" width="300" alt="today" /> | <img src="docs/hou.png" width="300" alt="pentads" /> |
+| 📅 **Year table** · all 24 instants | 🧭 **Day pillar** · nayin · decade · what suits today |
+| <img src="docs/year.png" width="300" alt="year" /> | <img src="docs/day.png" width="300" alt="day pillar" /> |
+| ☯️ **Hexagram** · month branch · casting · changed hexagram | 🗂️ **Seven days** · the casts of the past week |
+| <img src="docs/gua.png" width="300" alt="hexagram" /> | <img src="docs/guaold.png" width="300" alt="seven days" /> |
 
 ---
 
@@ -80,11 +80,13 @@ Every transition instant is computed locally from the sun's apparent longitude
 ### 1. Today
 
 - 🗓 Sexagenary year (switches at 立春), month branch (switches at the 12 节), day pillar (rolls over at Beijing midnight), Gregorian date
+- 🌙 The lunar date (with 闰 for leap months, computed from new moons and major terms), the zodiac animal (switches at 正月) and the day's moon phase (eight states with a glyph)
 - 🕰 The double-hour you are in right now (子时 spans 23:00–01:00), with its stem derived from the day stem by the five-rats rule; hover the line to see 庚申时 · 15-17
 - 🧭 **Day pillar page**: tap that line for the day count, 纳音 (e.g. 城头土), the decade it falls in (甲戌旬), and one neutral sentence each for the stem, the branch and the current double-hour — what suits today, never fortune-telling
 - 🌡 Term name, exact transition instant, day within the term
-- 🍃 Which of the 72 pentads today falls in; tap through for all three
+- 🍃 Which of the 72 pentads today falls in; tap through for all three, each with a plain-language gloss
 - ⏳ Days and **double-hours** until the next term (1 时辰 = 2 hours, e.g. 「距立冬 7 天 1 时辰」), with a thin progress bar; a live countdown on the term day
+- 🎉 Lunar festivals: 春节, 元宵, 端午, 七夕, 中秋, 重阳, 腊八 and 小年 — one line such as 「距中秋 12 天」, or 「今日中秋」 on the day (leap months never count)
 - 🥣 A one-line seasonal tip (from the bundled 节气养生速查 reference)
 - ☯️ The sovereign hexagram for the month branch, drawn with six lines
 - 🎲 The 卦 page can cast: three coins six times, six lines landing bottom-up, the primary and changed hexagram, one sentence of meaning
@@ -120,8 +122,10 @@ Every transition instant is computed locally from the sun's apparent longitude
 - 🪙 Three coins, six throws: a back counts 3, a face 2 — 6 old 阴, 7 young 阳, 8 young 阴, 9 old 阳, the old coin method
 - 🎲 The randomness is window.crypto.getRandomValues with rejection sampling (no modulo bias), entirely local, no request
 - ⬇️ The six lines land one at a time from the bottom (112 ms each); moving lines are marked ○ or ×, then the primary and changed hexagram are read out
+- 📜 When it settles, read the plain layer first: one sentence of meaning plus a plain gloss per moving line (a still cast shows no line texts); tap 「看原文」 to unfold the primary hexagram text, 彖/象 and the line texts (all 64 × 6 = 384 built in, no request)
+- 🧭 The changed hexagram speaks plainly too: its name and one sentence come first, its text stays behind 「看原文」, and copying carries it along
 - 🧾 One sentence per hexagram, all sixty-four: 「大过：栋梁将挠 —— 非常之时行非常之举，但别硬撑」
-- 📋 「复制卦意」 copies the date, number, trigrams, moving lines, changed hexagram and the sentence; 「再摇一卦」 throws again
+- 📋 「复制卦意」 copies the date, number, trigrams, moving lines, changed hexagram, the hexagram and moving-line texts, and the sentence; 「再摇一卦」 throws again
 - 🗂️ Casts stay for seven days: a row of date chips at the bottom of the 卦 page (today / 10/30 / 10/28 …) switches the view, the today chip is highlighted, tap it to come back; older entries fall off
 - 💾 Today's cast is remembered across page switches and restarts; reduced motion settles it at once
 
@@ -130,7 +134,7 @@ Every transition instant is computed locally from the sun's apparent longitude
 - 🌙 Rolls over at local midnight, on page visibility change, and on window focus
 - 📱 Under 480px the card collapses into a single row
 - 🎨 Eight palettes: season-following, brand, and 竹青 / 松绿 / 绛紫 / 秋香 / 赭石 / 靛青
-- 📋 Click anywhere to copy the summary (a drag over 3px is not a click); a small “copied” badge flashes; “问一问” puts a ready-made question in the composer
+- 📋 Click anywhere to copy today's note — term, lunar date, pentad, festival, tip and countdown, one line per item, ready to forward (a drag over 3px is not a click); a small “copied” badge flashes; “问一问” puts a ready-made question in the composer
 - 🔔 The term notification opens the card when clicked; a cold start uses the last cached result
 - 📴 Local fallback when the host route is unreachable; the card still renders
 - 🧯 Failing routes, denied notifications and full localStorage all degrade silently
@@ -280,8 +284,9 @@ The client calls this local route only; no external requests.
 
 ## 🎯 Accuracy
 
-- 🧮 Meeus low-precision apparent solar longitude + Espenak–Meeus ΔT + bisection
+- 🧮 Meeus low-precision apparent solar and lunar longitude + Espenak–Meeus ΔT + bisection
 - 📏 Within about **2–6 minutes** of the Purple Mountain Observatory values; dates are reliable
+- 🌙 The lunar date and moon phase come from the same local new-moon computation; a new moon lands within roughly ±20 minutes, so a 朔 that falls right at midnight may shift the lunar day by one against the official almanac — a known approximation
 - 🕗 Fixed to UTC+8 (no DST), years 1900–2100
 - 🀄 The sexagenary year switches at 立春 and the month branch at each of the 12 节 — the calendrical convention, not the lunar month
 - 🎲 Casting uses local cryptographic randomness (crypto.getRandomValues + rejection sampling), unrelated to the old 「以钱代蓍」 sensitivity; the sentences follow each 卦's meaning and are for reference, not a judgement of fortune

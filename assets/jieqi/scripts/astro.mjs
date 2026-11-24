@@ -301,6 +301,8 @@ export function solarTerm(date) {
   const gzYear = lichun && today < dayNumber(lichun.at) ? year - 1 : year
   const branch = monthStart ? MONTH_BRANCH[monthStart.name] : ''
   const gua = GUA[branch] || null
+  const dayGz = dayGanzhi(today)
+  const lunar = lunarDate(today)
   return {
     date: dayKey(at),
     term: current.name,
@@ -312,13 +314,20 @@ export function solarTerm(date) {
       year: ganzhiYear(gzYear),
       monthBranch: branch,
       monthStart: monthStart ? monthStart.name : '',
-      day: dayGanzhi(today),
+      day: dayGz,
       // A dated lookup has no live hour; only today does.
       hour: date ? null : hourGanzhi(at),
     },
     hexagram: gua ? { name: gua.name, symbol: gua.symbol, line: gua.line, lines: gua.lines } : null,
     fu: fuAt(today, fuOfYear(year)),
     jiu: jiuAt(today),
+    lunar: lunar ? { year: lunar.year, month: lunar.month, day: lunar.day, isLeap: lunar.isLeap, monthName: lunar.monthName, dayName: lunar.dayName, zodiac: lunar.zodiac } : null,
+    zodiac: {
+      year: lunar ? lunar.zodiac : (ZODIAC[ganzhiYear(gzYear)[1]] || ''),
+      day: ZODIAC[dayGz.branch] || '',
+    },
+    moon: moonPhase(today),
+    festival: nextFestival(today),
   }
 }
 
@@ -346,4 +355,234 @@ export function yearView(year) {
       : null,
     jiu: dongzhi ? dayKey(dongzhi.at) : '',
   }
+}
+
+// ---------------------------------------------------------------------------
+// 月相与农历：同一套 Meeus 低精度理论，月亮视黄经在本地算出来。
+// 朔（新月）是月亮追上太阳、黄经相合的那一刻；农历月从一次朔到下一次朔。
+// 农历的置闰规则照紫金山天文台现行算法：冬至必在十一月、大寒必在十二月，
+// 正月必含雨水；一个不含任何中气的朔望月，就是上一个月的闰月。
+
+/** 月亮视黄经（度，[0,360)）。Meeus《Astronomical Algorithms》第 47 章，截到 0.004°。 */
+export function moonLongitude(jd) {
+  const T = (jd - 2451545.0) / 36525
+  const Lp = 218.3164477 + 481267.88123421 * T - 0.0015786 * T * T
+    + (T * T * T) / 538841 - (T * T * T * T) / 65194000
+  const D = 297.8501921 + 445267.1114034 * T - 0.0018819 * T * T
+    + (T * T * T) / 545868 - (T * T * T * T) / 113065000
+  const M = 357.5291092 + 35999.0502909 * T - 0.0001536 * T * T + (T * T * T) / 24490000
+  const Mp = 134.9633964 + 477198.8675055 * T + 0.0087414 * T * T
+    + (T * T * T) / 69699 - (T * T * T * T) / 14712000
+  const F = 93.2720950 + 483202.0175233 * T - 0.0036539 * T * T
+    - (T * T * T) / 3526000 + (T * T * T * T) / 863310000
+  const s = Math.sin
+  const lam = Lp
+    + 6.288774 * s(rad(Mp))
+    + 1.274027 * s(rad(2 * D - Mp))
+    + 0.658314 * s(rad(2 * D))
+    + 0.213618 * s(rad(2 * Mp))
+    - 0.185116 * s(rad(M))
+    - 0.114332 * s(rad(2 * F))
+    + 0.058793 * s(rad(2 * D - 2 * Mp))
+    + 0.057066 * s(rad(2 * D - M - Mp))
+    + 0.053322 * s(rad(2 * D + Mp))
+    + 0.045758 * s(rad(2 * D - M))
+    - 0.040923 * s(rad(M - Mp))
+    - 0.034720 * s(rad(D))
+    - 0.030383 * s(rad(M + Mp))
+    + 0.015327 * s(rad(2 * D - 2 * F))
+    - 0.012528 * s(rad(Mp + 2 * F))
+    + 0.010980 * s(rad(Mp - 2 * F))
+    + 0.010675 * s(rad(4 * D - Mp))
+    + 0.010034 * s(rad(3 * Mp))
+    + 0.008548 * s(rad(4 * D - 2 * Mp))
+    - 0.007888 * s(rad(M - Mp + 2 * D))
+    + 0.006782 * s(rad(2 * D + M))
+    + 0.005162 * s(rad(Mp - M))
+    + 0.005000 * s(rad(Mp + D))
+    + 0.004049 * s(rad(Mp - M + 2 * D))
+    + 0.003996 * s(rad(2 * Mp + 2 * D))
+    + 0.003862 * s(rad(4 * D))
+    + 0.003665 * s(rad(2 * D - 3 * Mp))
+  return ((lam % 360) + 360) % 360
+}
+
+/** 月亮相对太阳的黄经差，折到 (-180, 180]。朔时为 0，向上穿过 0 的那一下就是朔。 */
+export function moonElongation(jd) {
+  return foldDiff(moonLongitude(jd), sunLongitude(jd))
+}
+
+/** TT 儒略日 → UTC 毫秒，undo ΔT（迭代一次即可，ΔT 变化极慢）。 */
+function jdToUtcMs(jd) {
+  const rough = (jd - 2440587.5) * DAY_MS
+  return (jd - deltaT(rough) / 86400 - 2440587.5) * DAY_MS
+}
+
+/** 在 [lo, hi] 内二分求出朔的 TT 儒略日（黄经差由负转正的那一点）。 */
+function newMoonJd(lo, hi) {
+  let a = lo
+  let b = hi
+  for (let i = 0; i < 60; i += 1) {
+    const mid = (a + b) / 2
+    if (moonElongation(mid) < 0) a = mid
+    else b = mid
+  }
+  return (a + b) / 2
+}
+
+/** 严格晚于 jd 的下一次朔的 TT 儒略日。 */
+function nextNewMoonAfter(jd) {
+  let prev = moonElongation(jd)
+  const step = 0.5
+  for (let i = 1; i <= 80; i += 1) {
+    const cur = moonElongation(jd + step * i)
+    if (prev <= 0 && cur >= 0) return newMoonJd(jd + step * (i - 1), jd + step * i)
+    prev = cur
+  }
+  return jd + 29.53
+}
+
+/** [fromMs, toMs] 之间的每一次朔，按时间升序（UTC 毫秒）。 */
+function newMoonsBetween(fromMs, toMs) {
+  const out = []
+  const startJd = dateToJd(fromMs) + deltaT(fromMs) / 86400
+  const endJd = dateToJd(toMs) + deltaT(toMs) / 86400
+  let jd = startJd
+  for (let guard = 0; guard < 64; guard += 1) {
+    const nm = nextNewMoonAfter(jd)
+    if (nm > endJd) break
+    out.push(jdToUtcMs(nm))
+    jd = nm + 20
+  }
+  return out
+}
+
+/** 十二中气 → 农历月序：冬至在十一月，大寒在十二月，雨水在正月…… */
+const ZHONGQI_MONTH = {
+  冬至: 11, 大寒: 12, 雨水: 1, 春分: 2, 谷雨: 3, 小满: 4,
+  夏至: 5, 大暑: 6, 处暑: 7, 秋分: 8, 霜降: 9, 小雪: 10,
+}
+
+const LUNAR_MONTH_NAMES = ['', '正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月']
+const LUNAR_DAY_NAMES = ['', '初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+  '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+  '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十']
+
+export const ZODIAC = { 子: '鼠', 丑: '牛', 寅: '虎', 卯: '兔', 辰: '龙', 巳: '蛇', 午: '马', 未: '羊', 申: '猴', 酉: '鸡', 戌: '狗', 亥: '猪' }
+
+/** 农历年号 = 正月初一所在的公历年。正月必含雨水，故正月初一是雨水前最近的一次朔。 */
+function lunarYearOf(dayNum) {
+  const gy = Number(dateOfDay(dayNum).slice(0, 4))
+  const yushui = termsOfYear(gy).find((term) => term.name === '雨水')
+  if (!yushui) return gy
+  const yd = dayNumber(yushui.at)
+  const anchorMs = yd * DAY_MS - BJ_OFFSET
+  const moons = newMoonsBetween(anchorMs - 35 * DAY_MS, anchorMs + 2 * DAY_MS).map((ms) => dayNumber(new Date(ms)))
+  moons.sort((a, b) => a - b)
+  const cny = moons.filter((d) => d <= yd).pop()
+  return cny !== undefined && dayNum >= cny ? gy : gy - 1
+}
+
+/** 农历月表：以 dayNum 为中心，取前后若干天内的朔日，排出每个农历月的起止与月序。 */
+function lunarMonthsAround(dayNum, backDays, fwdDays) {
+  const year = Number(dateOfDay(dayNum).slice(0, 4))
+  const zhongqi = []
+  for (const y of [year - 1, year, year + 1]) {
+    for (const term of termsOfYear(y)) {
+      if (ZHONGQI_MONTH[term.name]) zhongqi.push({ name: term.name, month: ZHONGQI_MONTH[term.name], day: dayNumber(term.at) })
+    }
+  }
+  zhongqi.sort((a, b) => a.day - b.day)
+
+  const anchor = dayNum * DAY_MS - BJ_OFFSET
+  const moons = newMoonsBetween(anchor - backDays * DAY_MS, anchor + fwdDays * DAY_MS).map((ms) => dayNumber(new Date(ms)))
+  moons.sort((a, b) => a - b)
+
+  const months = []
+  for (let i = 0; i + 1 < moons.length; i += 1) {
+    const start = moons[i]
+    const end = moons[i + 1]
+    const z = zhongqi.find((item) => item.day >= start && item.day < end)
+    months.push({ start, end, month: z ? z.month : 0, leap: !z })
+  }
+  // 无中气的月是闰月，沿用前一个月的月序。
+  for (let i = 0; i < months.length; i += 1) {
+    if (months[i].month !== 0) continue
+    months[i].leap = true
+    for (let j = i - 1; j >= 0; j -= 1) {
+      if (months[j].month !== 0) { months[i].month = months[j].month; break }
+    }
+  }
+  return months
+}
+
+/** 某一天的农历：年份（正月初一所在的公历年）、月、日、是否闰月、名称与年生肖。 */
+export function lunarDate(dayNum) {
+  const months = lunarMonthsAround(dayNum, 40, 40)
+  const hit = months.find((m) => dayNum >= m.start && dayNum < m.end)
+  if (!hit) return null
+
+  const ly = lunarYearOf(dayNum)
+  return {
+    year: ly,
+    month: hit.month,
+    day: dayNum - hit.start + 1,
+    isLeap: hit.leap,
+    monthName: (hit.leap ? '闰' : '') + LUNAR_MONTH_NAMES[hit.month],
+    dayName: LUNAR_DAY_NAMES[dayNum - hit.start + 1] || '',
+    zodiac: ZODIAC[ganzhiYear(ly)[1]] || '',
+  }
+}
+
+/** 农历节令：只取通行不过闰月的八个，按农历月日写死。 */
+const FESTIVALS = [
+  { name: '春节', month: 1, day: 1 },
+  { name: '元宵', month: 1, day: 15 },
+  { name: '端午', month: 5, day: 5 },
+  { name: '七夕', month: 7, day: 7 },
+  { name: '中秋', month: 8, day: 15 },
+  { name: '重阳', month: 9, day: 9 },
+  { name: '腊八', month: 12, day: 8 },
+  { name: '小年', month: 12, day: 23 },
+]
+
+function festivalInMonths(dayNum, months) {
+  const index = months.findIndex((m) => dayNum >= m.start && dayNum < m.end)
+  if (index === -1) return null
+  const current = months[index]
+  const dayOfMonth = dayNum - current.start + 1
+  // 同一个农历月里还有没过的节令（春节/元宵、腊八/小年）。
+  if (!current.leap) {
+    const same = FESTIVALS.find((f) => f.month === current.month && f.day >= dayOfMonth)
+    if (same) return { name: same.name, days: same.day - dayOfMonth, date: dateOfDay(current.start + same.day - 1) }
+  }
+  for (let i = index + 1; i < months.length; i += 1) {
+    const month = months[i]
+    if (month.leap) continue
+    const hit = FESTIVALS.find((f) => f.month === month.month)
+    if (hit) return { name: hit.name, days: month.start + hit.day - 1 - dayNum, date: dateOfDay(month.start + hit.day - 1) }
+  }
+  return null
+}
+
+/** 下一个农历节令：{ name, days, date }；days = 0 就是今天过了。闰月不过节。 */
+export function nextFestival(dayNum) {
+  return festivalInMonths(dayNum, lunarMonthsAround(dayNum, 40, 400))
+}
+
+/** 月相：以当天北京正午为准，给出月龄（天）、相名与一个象形。 */
+export function moonPhase(dayNum) {
+  const noonMs = dayNum * DAY_MS - BJ_OFFSET + DAY_MS / 2
+  const jd = dateToJd(noonMs) + deltaT(noonMs) / 86400
+  const angle = ((moonLongitude(jd) - sunLongitude(jd)) % 360 + 360) % 360
+  const age = (angle / 360) * 29.5305887
+  const t = ((age % 29.5305887) + 29.5305887) % 29.5305887
+  if (t < 1.8 || t > 27.7) return { phase: '朔', name: '新月', emoji: '🌑', age: Math.round(age * 10) / 10 }
+  if (t < 5.9) return { phase: '蛾眉', name: '蛾眉月', emoji: '🌒', age: Math.round(age * 10) / 10 }
+  if (t < 8.8) return { phase: '上弦', name: '上弦月', emoji: '🌓', age: Math.round(age * 10) / 10 }
+  if (t < 11.7) return { phase: '盈凸', name: '盈凸月', emoji: '🌔', age: Math.round(age * 10) / 10 }
+  if (t < 17.8) return { phase: '望', name: '满月', emoji: '🌕', age: Math.round(age * 10) / 10 }
+  if (t < 20.7) return { phase: '亏凸', name: '亏凸月', emoji: '🌖', age: Math.round(age * 10) / 10 }
+  if (t < 23.7) return { phase: '下弦', name: '下弦月', emoji: '🌗', age: Math.round(age * 10) / 10 }
+  return { phase: '残月', name: '残月', emoji: '🌘', age: Math.round(age * 10) / 10 }
 }

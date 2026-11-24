@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; width: 2560px; height: 1280px; overflow: hidden; }
+  body {
+    position: relative;
+    background:
+      radial-gradient(1180px 760px at 72% 46%, rgba(64, 78, 132, 0.20), transparent 66%),
+      radial-gradient(900px 620px at 12% 92%, rgba(52, 62, 110, 0.12), transparent 70%),
+      linear-gradient(180deg, #0a0b10 0%, #0c0e13 52%, #090a0e 100%);
+    font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dial { position: absolute; left: 0; top: 0; }
+  .badge {
+    position: absolute; left: 242px; top: 284px;
+    display: flex; align-items: center; gap: 16px;
+    padding: 15px 30px; border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.03);
+    color: #d6dae2; font-size: 27px; letter-spacing: 0.02em;
+  }
+  .badge i { width: 15px; height: 15px; border-radius: 50%; background: #d8b98c; display: block; }
+  h1 {
+    position: absolute; left: 232px; top: 386px; margin: 0;
+    font-size: 122px; line-height: 1.20; font-weight: 600;
+    letter-spacing: 0.01em; color: #ffffff;
+  }
+  p.sub {
+    position: absolute; left: 236px; top: 812px; margin: 0;
+    font-size: 34px; line-height: 1.62; color: #98a0ae; letter-spacing: 0.01em;
+  }
+  .foot {
+    position: absolute; left: 236px; top: 1096px;
+    display: flex; align-items: center; gap: 26px;
+    font-size: 26px; color: #7f8593; letter-spacing: 0.02em;
+  }
+  .foot s { display: block; width: 96px; height: 1px; background: rgba(255, 255, 255, 0.16); }
+  .card { position: absolute; left: 1715px; top: 241px; width: 398px; }
+  .dot {
+    position: absolute; left: 1361px; top: 166px; width: 42px; height: 42px;
+    border-radius: 50%; background: #d6c17e;
+  }
+</style>
+</head>
+<body>
+  <svg class="dial" width="2560" height="1280" viewBox="0 0 2560 1280">
+    <g transform="translate(2058 706)">
+      <circle r="486" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="2"/>
+      <g id="ticks"></g>
+    </g>
+  </svg>
+  <div class="badge"><i></i>DSH 插件 · 月令</div>
+  <h1>二十四节气<br>落在输入框上方</h1>
+  <p class="sub">一颗安静的小圆点，悬停展开今日节气、三候与消息卦。<br>整张卡片可以拖着走，年表里还有全年二十四次交节的准确时刻。</p>
+  <div class="foot"><s></s>DeepSeek Harness · 免费开源 · MIT</div>
+  <img class="card" src="cards/today.png" alt="">
+  <div class="dot"></div>
+  <script>
+    const ticks = document.getElementById('ticks')
+    const ns = 'http://www.w3.org/2000/svg'
+    for (let i = 0; i < 24; i += 1) {
+      const angle = (i * 15 - 90) * Math.PI / 180
+      const cardinal = i % 6 === 0
+      const outer = 486
+      const inner = outer - (cardinal ? 34 : 17)
+      const line = document.createElementNS(ns, 'line')
+      line.setAttribute('x1', String(inner * Math.cos(angle)))
+      line.setAttribute('y1', String(inner * Math.sin(angle)))
+      line.setAttribute('x2', String(outer * Math.cos(angle)))
+      line.setAttribute('y2', String(outer * Math.sin(angle)))
+      line.setAttribute('stroke', cardinal ? 'rgba(186,158,84,0.75)' : 'rgba(255,255,255,0.10)')
+      line.setAttribute('stroke-width', cardinal ? '4' : '2')
+      ticks.appendChild(line)
+    }
+  </script>
+</body>
+</html>

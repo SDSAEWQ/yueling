@@ -1,0 +1,44 @@
+name: 问题反馈 / Bug report
+description: 卡片不显示、交节时刻不对、农历差一天等
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量附上可复现的信息，方便定位。
+  - type: input
+    id: version
+    attributes:
+      label: 插件版本
+      placeholder: 例如 0.13.0（插件页可见）
+    validations:
+      required: true
+  - type: input
+    id: dsh
+    attributes:
+      label: DSH 版本
+      placeholder: 例如 1.x.x
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果 vs 实际结果
+      placeholder: |
+        期望：2026-10-31 是戊寅日
+        实际：显示……
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: 1. 打开卡片 2. 点…… 3. 出现……
+  - type: input
+    id: date
+    attributes:
+      label: 相关日期（若涉及节气/农历/卦）
+      placeholder: 2026-10-31
+  - type: input
+    id: source
+    attributes:
+      label: 对照来源（可选）
+      placeholder: 例如紫金山天文台公布的交节时刻

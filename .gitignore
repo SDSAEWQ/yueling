@@ -2,3 +2,10 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.zip
+_shots/vendor/
+_shots/out/
+_shots/tmp-*/
+
+_shots/cards/
+
+_shots/backup/

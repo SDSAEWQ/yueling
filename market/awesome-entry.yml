@@ -9,6 +9,6 @@ url: https://github.com/SDSAEWQ/yueling
 name: SDSAEWQ/yueling
 category: ui
 description:
-  en: A solar-term dot above the composer — hover it to see which of the 24 terms is running, the current pentad, the month's I Ching message hexagram and the countdown to the next term; the whole card drags anywhere, the year table lists all 24 term times, and each term carries one line of seasonal advice. Bundles a jieqi skill so the model looks terms up instead of reciting them. Install: npm package dshjieqi-card, or GitHub SDSAEWQ/yueling.
-  zh: 输入框上方的一颗节气圆点——悬停展开今日节气、当前三候、当月十二消息卦与下一个节气倒计时；整张卡片可以拖到任意位置，年表列出全年二十四次交节时刻，每个节气还带一行养生提示。附带 jieqi skill，模型查节气不再凭记忆。安装：npm 包名 dshjieqi-card，或 GitHub SDSAEWQ/yueling。
+  en: A solar-term dot above the composer — hover it to see which of the 24 terms is running, the current pentad (each with a plain gloss), the lunar date, zodiac and moon phase, the month's I Ching message hexagram and the countdown to the next term; the whole card drags anywhere, the year table lists all 24 term times, and each term carries one line of seasonal advice. The 卦 page casts a hexagram with three coins and reads its hexagram and moving-line texts. Bundles a jieqi skill so the model looks terms up instead of reciting them. Install: npm package dshjieqi-card, or GitHub SDSAEWQ/yueling.
+  zh: 输入框上方的一颗节气圆点——悬停展开今日节气、当前三候（每候带白话）、农历生肖月相、当月十二消息卦与下一个节气倒计时；整张卡片可以拖到任意位置，年表列出全年二十四次交节时刻，每个节气还带一行养生提示。卦页铜钱摇卦能读卦辞与动爻爻辞。附带 jieqi skill，模型查节气不再凭记忆。安装：npm 包名 dshjieqi-card，或 GitHub SDSAEWQ/yueling。
 icon: https://raw.githubusercontent.com/SDSAEWQ/yueling/main/docs/icon.png
